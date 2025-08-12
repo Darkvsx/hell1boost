@@ -73,5 +73,21 @@ export function createServer() {
   // Email routes
   app.post("/api/send-email", handleSendEmail);
 
+  // Serve static files from the built client in production
+  if (process.env.NODE_ENV === "production") {
+    const spaDir = path.resolve("dist/spa");
+    app.use(express.static(spaDir));
+
+    // SPA fallback: serve index.html for all non-API routes
+    app.get("*", (req, res) => {
+      // Don't serve index.html for API routes
+      if (req.path.startsWith("/api/")) {
+        return res.status(404).json({ error: "API endpoint not found" });
+      }
+
+      res.sendFile(path.join(spaDir, "index.html"));
+    });
+  }
+
   return app;
 }
