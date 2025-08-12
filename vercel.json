@@ -8,7 +8,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
-    "api/index.ts": {}
+    "api/index.ts": {
+      "runtime": "nodejs20.x"
+    }
   },
   "rewrites": [
     {
