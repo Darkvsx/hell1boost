@@ -13,3 +13,16 @@
   from = "/api/*"
   status = 200
   to = "/.netlify/functions/api/:splat"
+
+# SPA fallback - serve index.html for all non-API routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["admin","editor","viewer"], Country = ["US","GB","IL"]}
+
+# Alternative fallback that should catch everything not caught above
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
