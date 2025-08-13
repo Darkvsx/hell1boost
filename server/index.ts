@@ -119,14 +119,16 @@ export function createServer() {
       res.sendFile(path.join(spaDir, "index.html"));
     });
   } else {
-    // Development: serve the same index.html for all routes
-    // Let the client-side router handle the routing
+    // Development: serve specific HTML files for each route (same as production)
     console.log(`🔧 Setting up development MPA routes for: ${mpaRoutes.join(', ')}`);
 
     mpaRoutes.forEach((route) => {
+      const routeName = route.substring(1); // Remove leading slash
+      const htmlFile = `${routeName}.html`;
+
       app.get(route, (req, res) => {
-        console.log(`📄 Serving index.html for MPA route: ${route}`);
-        res.sendFile(path.resolve("index.html"));
+        console.log(`📄 Serving ${htmlFile} for MPA route: ${route}`);
+        res.sendFile(path.resolve(htmlFile));
       });
     });
 
