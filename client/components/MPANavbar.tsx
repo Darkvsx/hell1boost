@@ -178,7 +178,7 @@ export function MPANavbar() {
               variant="ghost"
               size="sm"
               className="relative h-9 w-9 px-0"
-              onClick={() => (window.location.href = "/cart.html")}
+              onClick={() => (window.location.href = "/cart")}
             >
               <ShoppingCart className="h-4 w-4" />
               {cartItemCount > 0 && (
