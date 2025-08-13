@@ -36,7 +36,7 @@ export function Navbar() {
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-10 h-10">
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
+                src="/placeholder.svg"
                 alt="HelldiversBoost Logo"
                 className="w-full h-full object-contain"
               />
