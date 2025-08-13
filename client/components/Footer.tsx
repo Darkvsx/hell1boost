@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+// No router imports needed for MPA
 import { Button } from "@/components/ui/button";
 import {
   Github,
