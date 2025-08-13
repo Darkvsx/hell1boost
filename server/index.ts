@@ -121,22 +121,28 @@ export function createServer() {
   } else {
     // Development: serve the same index.html for all routes
     // Let the client-side router handle the routing
+    console.log(`🔧 Setting up development MPA routes for: ${mpaRoutes.join(', ')}`);
+
     mpaRoutes.forEach((route) => {
       app.get(route, (req, res) => {
+        console.log(`📄 Serving index.html for MPA route: ${route}`);
         res.sendFile(path.resolve("index.html"));
       });
     });
 
     // Home page in development
     app.get("/", (req, res) => {
+      console.log("🏠 Serving index.html for home page");
       res.sendFile(path.resolve("index.html"));
     });
 
     // Fallback for development
     app.get("*", (req, res) => {
       if (req.path.startsWith("/api/")) {
+        console.log(`❌ API endpoint not found: ${req.path}`);
         return res.status(404).json({ error: "API endpoint not found" });
       }
+      console.log(`🔄 Fallback: serving index.html for: ${req.path}`);
       res.sendFile(path.resolve("index.html"));
     });
   }
