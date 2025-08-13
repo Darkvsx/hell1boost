@@ -46,9 +46,7 @@ export function MPALayout({ children }: MPALayoutProps) {
                         <ReferralsProvider>
                           <div className="min-h-screen bg-background flex flex-col">
                             <MPANavbar />
-                            <main className="flex-1">
-                              {children}
-                            </main>
+                            <main className="flex-1">{children}</main>
                             <Footer />
                           </div>
                         </ReferralsProvider>

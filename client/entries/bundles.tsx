@@ -13,5 +13,5 @@ createRoot(root).render(
     <Bundles />
     <Toaster />
     <Sonner />
-  </MPALayout>
+  </MPALayout>,
 );

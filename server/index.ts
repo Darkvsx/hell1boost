@@ -88,7 +88,7 @@ export function createServer() {
     "/account",
     "/cart",
     "/checkout",
-    "/admin"
+    "/admin",
   ];
 
   if (process.env.NODE_ENV === "production") {
@@ -96,7 +96,7 @@ export function createServer() {
     app.use(express.static(spaDir));
 
     // Production: serve specific HTML files for each route
-    mpaRoutes.forEach(route => {
+    mpaRoutes.forEach((route) => {
       const routeName = route.substring(1); // Remove leading slash
       app.get(route, (req, res) => {
         const htmlFile = path.join(spaDir, `${routeName}.html`);
@@ -119,7 +119,7 @@ export function createServer() {
   } else {
     // Development: serve the same index.html for all routes
     // Let the client-side router handle the routing
-    mpaRoutes.forEach(route => {
+    mpaRoutes.forEach((route) => {
       app.get(route, (req, res) => {
         res.sendFile(path.resolve("index.html"));
       });

@@ -13,5 +13,5 @@ createRoot(root).render(
     <CustomOrder />
     <Toaster />
     <Sonner />
-  </MPALayout>
+  </MPALayout>,
 );

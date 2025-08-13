@@ -18,7 +18,10 @@
     { "source": "/login", "destination": "/login.html" },
     { "source": "/register", "destination": "/register.html" },
     { "source": "/forgot-password", "destination": "/forgot-password.html" },
-    { "source": "/email-confirmation", "destination": "/email-confirmation.html" },
+    {
+      "source": "/email-confirmation",
+      "destination": "/email-confirmation.html"
+    },
     { "source": "/account", "destination": "/account.html" },
     { "source": "/cart", "destination": "/cart.html" },
     { "source": "/checkout", "destination": "/checkout.html" },

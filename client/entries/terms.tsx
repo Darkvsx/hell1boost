@@ -13,5 +13,5 @@ createRoot(root).render(
     <Terms />
     <Toaster />
     <Sonner />
-  </MPALayout>
+  </MPALayout>,
 );

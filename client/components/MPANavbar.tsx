@@ -45,7 +45,12 @@ interface NavigationItem {
 const navigation: NavigationItem[] = [
   { name: "Services", href: "/", icon: Crown },
   { name: "Bundles", href: "/bundles.html", icon: Package, badge: "Popular" },
-  { name: "Custom Order", href: "/custom-order.html", icon: Settings, isNew: true },
+  {
+    name: "Custom Order",
+    href: "/custom-order.html",
+    icon: Settings,
+    isNew: true,
+  },
   { name: "FAQ", href: "/faq.html" },
   { name: "Contact", href: "/contact.html" },
 ];
@@ -88,22 +93,26 @@ export function MPANavbar() {
     if (href === "/") {
       return currentPath === "/" || currentPath === "/index.html";
     }
-    const pathWithoutExtension = href.replace('.html', '');
-    return currentPath === href || currentPath === pathWithoutExtension || currentPath === pathWithoutExtension + '/';
+    const pathWithoutExtension = href.replace(".html", "");
+    return (
+      currentPath === href ||
+      currentPath === pathWithoutExtension ||
+      currentPath === pathWithoutExtension + "/"
+    );
   };
 
   return (
     <nav
       className={cn(
         "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-200",
-        isScrolled && "shadow-md border-border/40"
+        isScrolled && "shadow-md border-border/40",
       )}
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-4">
-            <a 
+            <a
               href="/"
               className="flex items-center space-x-2 text-xl font-bold text-primary hover:text-primary/80 transition-colors"
             >
@@ -126,7 +135,7 @@ export function MPANavbar() {
                     "relative flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary group",
                     isActive(item.href)
                       ? "text-primary border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {Icon && <Icon className="h-4 w-4" />}
@@ -137,7 +146,10 @@ export function MPANavbar() {
                     </Badge>
                   )}
                   {item.isNew && (
-                    <Badge variant="destructive" className="ml-1 text-xs animate-pulse">
+                    <Badge
+                      variant="destructive"
+                      className="ml-1 text-xs animate-pulse"
+                    >
                       New
                     </Badge>
                   )}
@@ -171,7 +183,7 @@ export function MPANavbar() {
               variant="ghost"
               size="sm"
               className="relative h-9 w-9 px-0"
-              onClick={() => window.location.href = '/cart.html'}
+              onClick={() => (window.location.href = "/cart.html")}
             >
               <ShoppingCart className="h-4 w-4" />
               {cartItemCount > 0 && (
@@ -188,11 +200,17 @@ export function MPANavbar() {
                 {user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="relative h-9 w-9 px-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="relative h-9 w-9 px-0"
+                      >
                         <User className="h-4 w-4" />
                         {notifications.length > 0 && (
                           <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0">
-                            <span className="sr-only">{notifications.length} notifications</span>
+                            <span className="sr-only">
+                              {notifications.length} notifications
+                            </span>
                           </Badge>
                         )}
                       </Button>
@@ -209,12 +227,16 @@ export function MPANavbar() {
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => window.location.href = '/account.html'}>
+                      <DropdownMenuItem
+                        onClick={() => (window.location.href = "/account.html")}
+                      >
                         <User className="mr-2 h-4 w-4" />
                         <span>Account</span>
                       </DropdownMenuItem>
                       {user.user_metadata?.role === "admin" && (
-                        <DropdownMenuItem onClick={() => window.location.href = '/admin.html'}>
+                        <DropdownMenuItem
+                          onClick={() => (window.location.href = "/admin.html")}
+                        >
                           <Crown className="mr-2 h-4 w-4" />
                           <span>Admin Dashboard</span>
                         </DropdownMenuItem>
@@ -231,13 +253,13 @@ export function MPANavbar() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => window.location.href = '/login.html'}
+                      onClick={() => (window.location.href = "/login.html")}
                     >
                       Sign In
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => window.location.href = '/register.html'}
+                      onClick={() => (window.location.href = "/register.html")}
                     >
                       Sign Up
                     </Button>
@@ -273,18 +295,24 @@ export function MPANavbar() {
                             "flex items-center space-x-3 rounded-md px-3 py-2 text-sm font-medium transition-colors text-left w-full",
                             isActive(item.href)
                               ? "bg-primary text-primary-foreground"
-                              : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                              : "text-muted-foreground hover:text-foreground hover:bg-accent",
                           )}
                         >
                           {Icon && <Icon className="h-4 w-4" />}
                           <span>{item.name}</span>
                           {item.badge && (
-                            <Badge variant="secondary" className="ml-auto text-xs">
+                            <Badge
+                              variant="secondary"
+                              className="ml-auto text-xs"
+                            >
                               {item.badge}
                             </Badge>
                           )}
                           {item.isNew && (
-                            <Badge variant="destructive" className="ml-auto text-xs">
+                            <Badge
+                              variant="destructive"
+                              className="ml-auto text-xs"
+                            >
                               New
                             </Badge>
                           )}

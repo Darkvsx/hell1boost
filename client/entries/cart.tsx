@@ -13,5 +13,5 @@ createRoot(root).render(
     <Cart />
     <Toaster />
     <Sonner />
-  </MPALayout>
+  </MPALayout>,
 );

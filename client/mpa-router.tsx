@@ -29,12 +29,12 @@ initializeAnalytics();
 // Get the page component based on the current URL path
 function getPageComponent() {
   const path = window.location.pathname;
-  
-  console.log('MPA Router - Current path:', path);
-  
+
+  console.log("MPA Router - Current path:", path);
+
   // Remove trailing slash and normalize path
   const normalizedPath = path === "/" ? "/" : path.replace(/\/$/, "");
-  
+
   switch (normalizedPath) {
     case "/":
       return <Index />;
@@ -67,7 +67,7 @@ function getPageComponent() {
     case "/admin":
       return <AdminDashboard />;
     default:
-      console.log('MPA Router - Unknown path, showing 404:', normalizedPath);
+      console.log("MPA Router - Unknown path, showing 404:", normalizedPath);
       return <NotFound />;
   }
 }
@@ -76,7 +76,7 @@ function getPageComponent() {
 function updateDocumentTitle() {
   const path = window.location.pathname;
   const normalizedPath = path === "/" ? "/" : path.replace(/\/$/, "");
-  
+
   const titles: { [key: string]: string } = {
     "/": "HelldiversBoost - Professional Helldivers 2 Boosting Services",
     "/bundles": "Bundles - HelldiversBoost",
@@ -94,7 +94,7 @@ function updateDocumentTitle() {
     "/checkout": "Checkout - HelldiversBoost",
     "/admin": "Admin Dashboard - HelldiversBoost",
   };
-  
+
   document.title = titles[normalizedPath] || "HelldiversBoost";
 }
 
@@ -105,12 +105,12 @@ const PageComponent = getPageComponent();
 const root = document.getElementById("root");
 if (!root) throw new Error("Root element not found");
 
-console.log('MPA Router - Rendering page for:', window.location.pathname);
+console.log("MPA Router - Rendering page for:", window.location.pathname);
 
 createRoot(root).render(
   <MPALayout>
     {PageComponent}
     <Toaster />
     <Sonner />
-  </MPALayout>
+  </MPALayout>,
 );

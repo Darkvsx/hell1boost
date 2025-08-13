@@ -13,5 +13,5 @@ createRoot(root).render(
     <Register />
     <Toaster />
     <Sonner />
-  </MPALayout>
+  </MPALayout>,
 );
