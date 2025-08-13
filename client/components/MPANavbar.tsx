@@ -44,15 +44,15 @@ interface NavigationItem {
 
 const navigation: NavigationItem[] = [
   { name: "Services", href: "/", icon: Crown },
-  { name: "Bundles", href: "/bundles.html", icon: Package, badge: "Popular" },
+  { name: "Bundles", href: "/bundles", icon: Package, badge: "Popular" },
   {
     name: "Custom Order",
-    href: "/custom-order.html",
+    href: "/custom-order",
     icon: Settings,
     isNew: true,
   },
-  { name: "FAQ", href: "/faq.html" },
-  { name: "Contact", href: "/contact.html" },
+  { name: "FAQ", href: "/faq" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export function MPANavbar() {
