@@ -73,66 +73,71 @@ export function createServer() {
   // Email routes
   app.post("/api/send-email", handleSendEmail);
 
-  // MPA routing for both development and production
-  const routes = [
-    { path: "/bundles", file: "bundles.html" },
-    { path: "/contact", file: "contact.html" },
-    { path: "/faq", file: "faq.html" },
-    { path: "/custom-order", file: "custom-order.html" },
-    { path: "/terms", file: "terms.html" },
-    { path: "/privacy", file: "privacy.html" },
-    { path: "/login", file: "login.html" },
-    { path: "/register", file: "register.html" },
-    { path: "/forgot-password", file: "forgot-password.html" },
-    { path: "/email-confirmation", file: "email-confirmation.html" },
-    { path: "/account", file: "account.html" },
-    { path: "/cart", file: "cart.html" },
-    { path: "/checkout", file: "checkout.html" },
-    { path: "/admin", file: "admin.html" },
+  // MPA routes that should serve specific HTML files
+  const mpaRoutes = [
+    "/bundles",
+    "/contact",
+    "/faq",
+    "/custom-order",
+    "/terms",
+    "/privacy",
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/email-confirmation",
+    "/account",
+    "/cart",
+    "/checkout",
+    "/admin"
   ];
 
-  // Serve static files from appropriate directory
   if (process.env.NODE_ENV === "production") {
     const spaDir = path.resolve("dist/spa");
     app.use(express.static(spaDir));
 
-    // Production: serve built HTML files
-    routes.forEach(route => {
-      app.get(route.path, (req, res) => {
-        const htmlFile = path.join(spaDir, route.file);
+    // Production: serve specific HTML files for each route
+    mpaRoutes.forEach(route => {
+      const routeName = route.substring(1); // Remove leading slash
+      app.get(route, (req, res) => {
+        const htmlFile = path.join(spaDir, `${routeName}.html`);
         res.sendFile(htmlFile);
       });
     });
 
-    // Home page
+    // Home page in production
     app.get("/", (req, res) => {
       res.sendFile(path.join(spaDir, "index.html"));
     });
+
+    // Fallback for production
+    app.get("*", (req, res) => {
+      if (req.path.startsWith("/api/")) {
+        return res.status(404).json({ error: "API endpoint not found" });
+      }
+      res.sendFile(path.join(spaDir, "index.html"));
+    });
   } else {
-    // Development: serve HTML files from root directory
-    routes.forEach(route => {
-      app.get(route.path, (req, res) => {
-        const htmlFile = path.resolve(route.file);
-        res.sendFile(htmlFile);
+    // Development: serve the same index.html for all routes
+    // Let the client-side router handle the routing
+    mpaRoutes.forEach(route => {
+      app.get(route, (req, res) => {
+        res.sendFile(path.resolve("index.html"));
       });
     });
-  }
 
-  // Default fallback for unknown routes (except API)
-  app.get("*", (req, res) => {
-    // Don't serve HTML for API routes
-    if (req.path.startsWith("/api/")) {
-      return res.status(404).json({ error: "API endpoint not found" });
-    }
-
-    // Serve home page for unknown routes
-    if (process.env.NODE_ENV === "production") {
-      const spaDir = path.resolve("dist/spa");
-      res.sendFile(path.join(spaDir, "index.html"));
-    } else {
+    // Home page in development
+    app.get("/", (req, res) => {
       res.sendFile(path.resolve("index.html"));
-    }
-  });
+    });
+
+    // Fallback for development
+    app.get("*", (req, res) => {
+      if (req.path.startsWith("/api/")) {
+        return res.status(404).json({ error: "API endpoint not found" });
+      }
+      res.sendFile(path.resolve("index.html"));
+    });
+  }
 
   return app;
 }
