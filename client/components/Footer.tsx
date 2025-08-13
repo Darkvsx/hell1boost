@@ -53,30 +53,30 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Company</h3>
             <div className="space-y-2">
-              <Link
-                to="/faq"
+              <a
+                href="/faq"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 FAQ
-              </Link>
-              <Link
-                to="/contact"
+              </a>
+              <a
+                href="/contact"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Contact
-              </Link>
-              <Link
-                to="/terms"
+              </a>
+              <a
+                href="/terms"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Terms of Service
-              </Link>
-              <Link
-                to="/privacy"
+              </a>
+              <a
+                href="/privacy"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Privacy Policy
-              </Link>
+              </a>
             </div>
           </div>
 
