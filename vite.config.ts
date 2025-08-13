@@ -212,7 +212,6 @@ function htmlPlugin(): Plugin {
     <link rel="icon" type="image/svg+xml" href="/placeholder.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${page.title}</title>
-    <link rel="manifest" href="/manifest.json" />
   </head>
   <body>
     <div id="root"></div>
