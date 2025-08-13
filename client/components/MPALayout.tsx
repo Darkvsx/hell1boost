@@ -10,7 +10,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AccessibilityWrapper } from "@/components/AccessibilityWrapper";
 import { SEOHead } from "@/components/SEOHead";
 import { SecurityProvider } from "@/components/SecurityProvider";
-import { EnhancedNavbar } from "@/components/EnhancedNavbar";
+import { MPANavbar } from "@/components/MPANavbar";
 import { Footer } from "@/components/Footer";
 
 const queryClient = new QueryClient({
