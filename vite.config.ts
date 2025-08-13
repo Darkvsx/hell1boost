@@ -53,11 +53,25 @@ export default defineConfig(({ mode }) => ({
         chunkFileNames: `chunks/[name]-[hash].js`,
         assetFileNames: `assets/[name]-[hash].[ext]`,
         manualChunks: (id) => {
-          if (id.includes("node_modules/react")) return "vendor-react";
+          // Core React libraries - most specific patterns first
+          if (
+            id.includes("node_modules/react/index.js") ||
+            id.includes("node_modules/react-dom/") ||
+            id.includes("node_modules/react/") ||
+            id.includes("node_modules/scheduler/") ||
+            id.includes("react/jsx-runtime") ||
+            id.includes("react-dom/client")
+          ) {
+            return "vendor-react";
+          }
+          // UI libraries
           if (id.includes("@radix-ui")) return "vendor-ui";
           if (id.includes("lucide-react")) return "vendor-icons";
           if (id.includes("@supabase")) return "vendor-supabase";
           if (id.includes("@tanstack/react-query")) return "vendor-query";
+          if (id.includes("@paypal")) return "vendor-paypal";
+          if (id.includes("framer-motion")) return "vendor-animation";
+          // Other vendor libraries - this should be last
           if (id.includes("node_modules")) return "vendor-misc";
         },
       },
