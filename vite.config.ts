@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => ({
     modulePreload: {
       polyfill: false,
     },
+    copyPublicDir: true,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, "client/entries/index.tsx"),
