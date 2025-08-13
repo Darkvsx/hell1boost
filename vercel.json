@@ -9,6 +9,20 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/bundles", "destination": "/bundles.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/faq", "destination": "/faq.html" },
+    { "source": "/custom-order", "destination": "/custom-order.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/forgot-password", "destination": "/forgot-password.html" },
+    { "source": "/email-confirmation", "destination": "/email-confirmation.html" },
+    { "source": "/account", "destination": "/account.html" },
+    { "source": "/cart", "destination": "/cart.html" },
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/admin", "destination": "/admin.html" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ],
   "headers": [
