@@ -94,6 +94,8 @@ export function createServer() {
   if (process.env.NODE_ENV === "production") {
     const spaDir = path.resolve("dist/spa");
     app.use(express.static(spaDir));
+    // Also serve public files
+    app.use(express.static(path.resolve("public")));
 
     // Production: serve specific HTML files for each route
     mpaRoutes.forEach((route) => {
