@@ -120,7 +120,9 @@ export function createServer() {
     });
   } else {
     // Development: serve specific HTML files for each route (same as production)
-    console.log(`🔧 Setting up development MPA routes for: ${mpaRoutes.join(', ')}`);
+    console.log(
+      `🔧 Setting up development MPA routes for: ${mpaRoutes.join(", ")}`,
+    );
 
     mpaRoutes.forEach((route) => {
       const routeName = route.substring(1); // Remove leading slash
