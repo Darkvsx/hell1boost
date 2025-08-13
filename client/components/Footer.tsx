@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+// No router imports needed for MPA
 import { Button } from "@/components/ui/button";
 import {
   Github,
@@ -24,7 +24,7 @@ export function Footer() {
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8">
                 <img
-                  src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
+                  src="/placeholder.svg"
                   alt="HelldiversBoost Logo"
                   className="w-full h-full object-contain"
                 />
@@ -53,30 +53,30 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Company</h3>
             <div className="space-y-2">
-              <Link
-                to="/faq"
+              <a
+                href="/faq"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 FAQ
-              </Link>
-              <Link
-                to="/contact"
+              </a>
+              <a
+                href="/contact"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Contact
-              </Link>
-              <Link
-                to="/terms"
+              </a>
+              <a
+                href="/terms"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Terms of Service
-              </Link>
-              <Link
-                to="/privacy"
+              </a>
+              <a
+                href="/privacy"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Privacy Policy
-              </Link>
+              </a>
             </div>
           </div>
 

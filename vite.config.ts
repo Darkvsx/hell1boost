@@ -4,7 +4,6 @@ import path from "path";
 import { createServer } from "./server";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -22,10 +21,40 @@ export default defineConfig(({ mode }) => ({
     modulePreload: {
       polyfill: false,
     },
+    copyPublicDir: true,
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "client/entries/index.tsx"),
+        bundles: path.resolve(__dirname, "client/entries/bundles.tsx"),
+        contact: path.resolve(__dirname, "client/entries/contact.tsx"),
+        faq: path.resolve(__dirname, "client/entries/faq.tsx"),
+        "custom-order": path.resolve(
+          __dirname,
+          "client/entries/custom-order.tsx",
+        ),
+        terms: path.resolve(__dirname, "client/entries/terms.tsx"),
+        privacy: path.resolve(__dirname, "client/entries/privacy.tsx"),
+        login: path.resolve(__dirname, "client/entries/login.tsx"),
+        register: path.resolve(__dirname, "client/entries/register.tsx"),
+        "forgot-password": path.resolve(
+          __dirname,
+          "client/entries/forgot-password.tsx",
+        ),
+        "email-confirmation": path.resolve(
+          __dirname,
+          "client/entries/email-confirmation.tsx",
+        ),
+        account: path.resolve(__dirname, "client/entries/account.tsx"),
+        cart: path.resolve(__dirname, "client/entries/cart.tsx"),
+        checkout: path.resolve(__dirname, "client/entries/checkout.tsx"),
+        admin: path.resolve(__dirname, "client/entries/admin.tsx"),
+      },
       output: {
+        entryFileNames: `[name].js`,
+        chunkFileNames: `chunks/[name]-[hash].js`,
+        assetFileNames: `assets/[name]-[hash].[ext]`,
         manualChunks: (id) => {
-          // Core React libraries - MUST be first and most specific
+          // Core React libraries - most specific patterns first
           if (
             id.includes("node_modules/react/index.js") ||
             id.includes("node_modules/react-dom/") ||
@@ -36,58 +65,16 @@ export default defineConfig(({ mode }) => ({
           ) {
             return "vendor-react";
           }
-          // Router (after React check)
-          if (id.includes("react-router")) {
-            return "vendor-router";
-          }
-          // UI libraries (Radix UI)
-          if (id.includes("@radix-ui")) {
-            return "vendor-ui";
-          }
-          // Lucide icons
-          if (id.includes("lucide-react")) {
-            return "vendor-icons";
-          }
-          // Supabase
-          if (id.includes("@supabase") || id.includes("supabase")) {
-            return "vendor-supabase";
-          }
-          // PayPal
-          if (id.includes("@paypal")) {
-            return "vendor-paypal";
-          }
-          // React Query
-          if (id.includes("@tanstack/react-query")) {
-            return "vendor-query";
-          }
-          // Framer Motion
-          if (id.includes("framer-motion")) {
-            return "vendor-animation";
-          }
-          // Three.js (if used)
-          if (id.includes("three") || id.includes("@react-three")) {
-            return "vendor-3d";
-          }
-          // Other vendor libraries (this should be last)
-          if (id.includes("node_modules")) {
-            return "vendor-misc";
-          }
+          // UI libraries
+          if (id.includes("@radix-ui")) return "vendor-ui";
+          if (id.includes("lucide-react")) return "vendor-icons";
+          if (id.includes("@supabase")) return "vendor-supabase";
+          if (id.includes("@tanstack/react-query")) return "vendor-query";
+          if (id.includes("@paypal")) return "vendor-paypal";
+          if (id.includes("framer-motion")) return "vendor-animation";
+          // Other vendor libraries - this should be last
+          if (id.includes("node_modules")) return "vendor-misc";
         },
-        // Optimize chunk naming for better caching
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId;
-          if (facadeModuleId) {
-            const fileName = facadeModuleId
-              .split("/")
-              .pop()
-              ?.replace(".tsx", "")
-              .replace(".ts", "");
-            return `chunks/${fileName}-[hash].js`;
-          }
-          return `chunks/[name]-[hash].js`;
-        },
-        entryFileNames: `assets/[name]-[hash].js`,
-        assetFileNames: `assets/[name]-[hash].[ext]`,
       },
     },
     chunkSizeWarningLimit: 1000,
@@ -104,7 +91,6 @@ export default defineConfig(({ mode }) => ({
       "react-dom",
       "react-dom/client",
       "react/jsx-runtime",
-      "react-router-dom",
       "@supabase/supabase-js",
       "@tanstack/react-query",
       "lucide-react",
@@ -117,16 +103,12 @@ export default defineConfig(({ mode }) => ({
       "clsx",
       "tailwind-merge",
     ],
-    exclude: [
-      // Exclude large libraries that should be lazy loaded
-      "@react-three/fiber",
-      "@react-three/drei",
-    ],
   },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
     expressPlugin(),
+    mode === "production" && htmlPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -139,12 +121,110 @@ export default defineConfig(({ mode }) => ({
 function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
-    apply: "serve", // Only apply during development (serve mode)
+    apply: "serve",
     configureServer(server) {
       const app = createServer();
-
-      // Add Express app as middleware to Vite dev server
       server.middlewares.use(app);
+    },
+  };
+}
+
+function htmlPlugin(): Plugin {
+  return {
+    name: "html-generator",
+    generateBundle() {
+      const pages = [
+        {
+          name: "index",
+          entry: "main",
+          title:
+            "HelldiversBoost - Professional Helldivers 2 Boosting Services",
+        },
+        {
+          name: "bundles",
+          entry: "bundles",
+          title: "Bundles - HelldiversBoost",
+        },
+        {
+          name: "contact",
+          entry: "contact",
+          title: "Contact - HelldiversBoost",
+        },
+        { name: "faq", entry: "faq", title: "FAQ - HelldiversBoost" },
+        {
+          name: "custom-order",
+          entry: "custom-order",
+          title: "Custom Order - HelldiversBoost",
+        },
+        {
+          name: "terms",
+          entry: "terms",
+          title: "Terms of Service - HelldiversBoost",
+        },
+        {
+          name: "privacy",
+          entry: "privacy",
+          title: "Privacy Policy - HelldiversBoost",
+        },
+        { name: "login", entry: "login", title: "Login - HelldiversBoost" },
+        {
+          name: "register",
+          entry: "register",
+          title: "Register - HelldiversBoost",
+        },
+        {
+          name: "forgot-password",
+          entry: "forgot-password",
+          title: "Forgot Password - HelldiversBoost",
+        },
+        {
+          name: "email-confirmation",
+          entry: "email-confirmation",
+          title: "Email Confirmation - HelldiversBoost",
+        },
+        {
+          name: "account",
+          entry: "account",
+          title: "Account - HelldiversBoost",
+        },
+        {
+          name: "cart",
+          entry: "cart",
+          title: "Shopping Cart - HelldiversBoost",
+        },
+        {
+          name: "checkout",
+          entry: "checkout",
+          title: "Checkout - HelldiversBoost",
+        },
+        {
+          name: "admin",
+          entry: "admin",
+          title: "Admin Dashboard - HelldiversBoost",
+        },
+      ];
+
+      pages.forEach((page) => {
+        const htmlContent = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/placeholder.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${page.title}</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/${page.entry}.js"></script>
+  </body>
+</html>`;
+
+        this.emitFile({
+          type: "asset",
+          fileName: `${page.name}.html`,
+          source: htmlContent,
+        });
+      });
     },
   };
 }
