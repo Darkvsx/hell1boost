@@ -248,13 +248,13 @@ export function MPANavbar() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => (window.location.href = "/login.html")}
+                      onClick={() => (window.location.href = "/login")}
                     >
                       Sign In
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => (window.location.href = "/register.html")}
+                      onClick={() => (window.location.href = "/register")}
                     >
                       Sign Up
                     </Button>
