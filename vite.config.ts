@@ -126,42 +126,8 @@ function devMPAPlugin(): Plugin {
     name: "dev-mpa",
     apply: "serve",
     configureServer(server) {
-      const routes = [
-        { path: "/bundles", entry: "client/entries/bundles.tsx" },
-        { path: "/contact", entry: "client/entries/contact.tsx" },
-        { path: "/faq", entry: "client/entries/faq.tsx" },
-        { path: "/custom-order", entry: "client/entries/custom-order.tsx" },
-        { path: "/terms", entry: "client/entries/terms.tsx" },
-        { path: "/privacy", entry: "client/entries/privacy.tsx" },
-        { path: "/login", entry: "client/entries/login.tsx" },
-        { path: "/register", entry: "client/entries/register.tsx" },
-        { path: "/forgot-password", entry: "client/entries/forgot-password.tsx" },
-        { path: "/email-confirmation", entry: "client/entries/email-confirmation.tsx" },
-        { path: "/account", entry: "client/entries/account.tsx" },
-        { path: "/cart", entry: "client/entries/cart.tsx" },
-        { path: "/checkout", entry: "client/entries/checkout.tsx" },
-        { path: "/admin", entry: "client/entries/admin.tsx" },
-      ];
-
-      server.middlewares.use((req, res, next) => {
-        const url = req.url?.split('?')[0]; // Remove query params
-        
-        // Handle root path
-        if (url === "/") {
-          req.url = "/client/entries/index.tsx";
-          return next();
-        }
-
-        // Check if it's a route we handle
-        const route = routes.find(r => r.path === url);
-        if (route) {
-          req.url = "/" + route.entry;
-          return next();
-        }
-
-        // Let other requests pass through
-        next();
-      });
+      // No URL rewriting needed - let Vite handle the HTML files directly
+      // The HTML files will reference the .tsx files in development
     },
   };
 }
