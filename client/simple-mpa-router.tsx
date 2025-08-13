@@ -4,6 +4,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { MPALayout } from "@/components/MPALayout";
 
+// Initialize analytics safely
+try {
+  import("@/lib/analytics").then(({ initializeAnalytics }) => {
+    initializeAnalytics();
+  });
+} catch (error) {
+  console.warn("Analytics initialization failed:", error);
+}
+
 // Simple page loading function
 function loadPageComponent() {
   const path = window.location.pathname.replace(/\/$/, '') || '/';
