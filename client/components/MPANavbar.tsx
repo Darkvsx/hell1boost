@@ -223,14 +223,14 @@ export function MPANavbar() {
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        onClick={() => (window.location.href = "/account.html")}
+                        onClick={() => (window.location.href = "/account")}
                       >
                         <User className="mr-2 h-4 w-4" />
                         <span>Account</span>
                       </DropdownMenuItem>
                       {user.user_metadata?.role === "admin" && (
                         <DropdownMenuItem
-                          onClick={() => (window.location.href = "/admin.html")}
+                          onClick={() => (window.location.href = "/admin")}
                         >
                           <Crown className="mr-2 h-4 w-4" />
                           <span>Admin Dashboard</span>
