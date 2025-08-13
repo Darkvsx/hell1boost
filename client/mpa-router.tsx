@@ -4,139 +4,199 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { MPALayout } from "@/components/MPALayout";
 
-// Initialize analytics safely
-try {
-  import("@/lib/analytics").then(({ initializeAnalytics }) => {
-    initializeAnalytics();
-  });
-} catch (error) {
-  console.warn("Analytics initialization failed:", error);
-}
+console.log('🚀 MPA Router initializing...');
 
-// Simple page loading function
-function loadPageComponent() {
+// Route definitions
+const routes = {
+  '/': () => import('@/pages/Index'),
+  '/bundles': () => import('@/pages/Bundles'),
+  '/contact': () => import('@/pages/Contact'),
+  '/faq': () => import('@/pages/FAQ'),
+  '/custom-order': () => import('@/pages/CustomOrder'),
+  '/terms': () => import('@/pages/Terms'),
+  '/privacy': () => import('@/pages/Privacy'),
+  '/login': () => import('@/pages/Login'),
+  '/register': () => import('@/pages/Register'),
+  '/forgot-password': () => import('@/pages/ForgotPassword'),
+  '/email-confirmation': () => import('@/pages/EmailConfirmation'),
+  '/account': () => import('@/pages/Account'),
+  '/cart': () => import('@/pages/Cart'),
+  '/checkout': () => import('@/pages/Checkout'),
+  '/admin': () => import('@/pages/AdminDashboard'),
+};
+
+// Page titles
+const titles = {
+  '/': 'HelldiversBoost - Professional Helldivers 2 Boosting Services',
+  '/bundles': 'Bundles - HelldiversBoost',
+  '/contact': 'Contact - HelldiversBoost',
+  '/faq': 'FAQ - HelldiversBoost',
+  '/custom-order': 'Custom Order - HelldiversBoost',
+  '/terms': 'Terms of Service - HelldiversBoost',
+  '/privacy': 'Privacy Policy - HelldiversBoost',
+  '/login': 'Login - HelldiversBoost',
+  '/register': 'Register - HelldiversBoost',
+  '/forgot-password': 'Forgot Password - HelldiversBoost',
+  '/email-confirmation': 'Email Confirmation - HelldiversBoost',
+  '/account': 'Account - HelldiversBoost',
+  '/cart': 'Shopping Cart - HelldiversBoost',
+  '/checkout': 'Checkout - HelldiversBoost',
+  '/admin': 'Admin Dashboard - HelldiversBoost',
+};
+
+// Get current path
+function getCurrentPath(): string {
   const path = window.location.pathname.replace(/\/$/, '') || '/';
-  
-  console.log('Loading page for path:', path);
-  
-  // Use dynamic imports to avoid loading all components at once
-  switch (path) {
-    case '/':
-      return import('@/pages/Index').then(module => module.default);
-    case '/bundles':
-      return import('@/pages/Bundles').then(module => module.default);
-    case '/contact':
-      return import('@/pages/Contact').then(module => module.default);
-    case '/faq':
-      return import('@/pages/FAQ').then(module => module.default);
-    case '/custom-order':
-      return import('@/pages/CustomOrder').then(module => module.default);
-    case '/terms':
-      return import('@/pages/Terms').then(module => module.default);
-    case '/privacy':
-      return import('@/pages/Privacy').then(module => module.default);
-    case '/login':
-      return import('@/pages/Login').then(module => module.default);
-    case '/register':
-      return import('@/pages/Register').then(module => module.default);
-    case '/forgot-password':
-      return import('@/pages/ForgotPassword').then(module => module.default);
-    case '/email-confirmation':
-      return import('@/pages/EmailConfirmation').then(module => module.default);
-    case '/account':
-      return import('@/pages/Account').then(module => module.default);
-    case '/cart':
-      return import('@/pages/Cart').then(module => module.default);
-    case '/checkout':
-      return import('@/pages/Checkout').then(module => module.default);
-    case '/admin':
-      return import('@/pages/AdminDashboard').then(module => module.default);
-    default:
-      return import('@/pages/NotFound').then(module => module.default);
-  }
+  console.log('📍 Current path:', path);
+  return path;
 }
 
 // Update document title
-function updateTitle() {
-  const path = window.location.pathname.replace(/\/$/, '') || '/';
-  const titles: Record<string, string> = {
-    '/': 'HelldiversBoost - Professional Helldivers 2 Boosting Services',
-    '/bundles': 'Bundles - HelldiversBoost',
-    '/contact': 'Contact - HelldiversBoost',
-    '/faq': 'FAQ - HelldiversBoost',
-    '/custom-order': 'Custom Order - HelldiversBoost',
-    '/terms': 'Terms of Service - HelldiversBoost',
-    '/privacy': 'Privacy Policy - HelldiversBoost',
-    '/login': 'Login - HelldiversBoost',
-    '/register': 'Register - HelldiversBoost',
-    '/forgot-password': 'Forgot Password - HelldiversBoost',
-    '/email-confirmation': 'Email Confirmation - HelldiversBoost',
-    '/account': 'Account - HelldiversBoost',
-    '/cart': 'Shopping Cart - HelldiversBoost',
-    '/checkout': 'Checkout - HelldiversBoost',
-    '/admin': 'Admin Dashboard - HelldiversBoost',
-  };
-  
-  document.title = titles[path] || 'HelldiversBoost';
+function updateTitle(path: string) {
+  const title = titles[path as keyof typeof titles] || 'HelldiversBoost';
+  document.title = title;
+  console.log('📝 Title updated:', title);
 }
 
 // Loading component
 function LoadingPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
         <p className="mt-4 text-muted-foreground">Loading page...</p>
+        <p className="mt-2 text-xs text-muted-foreground">Path: {getCurrentPath()}</p>
       </div>
     </div>
   );
 }
 
-// Error boundary component
-function ErrorPage({ error }: { error: Error }) {
+// Error component
+function ErrorPage({ error, path }: { error: Error; path: string }) {
+  console.error('❌ Page load error:', error);
+  
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-destructive mb-4">Error Loading Page</h1>
-        <p className="text-muted-foreground mb-4">{error.message}</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="px-4 py-2 bg-primary text-primary-foreground rounded"
-        >
-          Reload Page
-        </button>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center max-w-md p-6">
+        <h1 className="text-2xl font-bold text-destructive mb-4">Failed to Load Page</h1>
+        <p className="text-muted-foreground mb-2">Path: <code>{path}</code></p>
+        <p className="text-muted-foreground mb-4">Error: {error.message}</p>
+        <div className="space-y-2">
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-primary text-primary-foreground rounded w-full"
+          >
+            Reload Page
+          </button>
+          <button 
+            onClick={() => window.location.href = '/'} 
+            className="px-4 py-2 bg-secondary text-secondary-foreground rounded w-full"
+          >
+            Go Home
+          </button>
+        </div>
+        <details className="mt-4 text-left">
+          <summary className="cursor-pointer text-sm text-muted-foreground">Debug Info</summary>
+          <pre className="mt-2 p-2 bg-muted rounded text-xs overflow-auto">
+            {error.stack}
+          </pre>
+        </details>
       </div>
     </div>
   );
 }
 
-// Main app function
-async function initializeApp() {
-  const root = document.getElementById("root");
-  if (!root) {
-    console.error("Root element not found!");
-    return;
-  }
-
-  // Update title
-  updateTitle();
-
-  // Show loading initially
-  const reactRoot = createRoot(root);
-  reactRoot.render(
-    <MPALayout>
-      <LoadingPage />
-      <Toaster />
-      <Sonner />
-    </MPALayout>
+// Not found component
+function NotFoundPage({ path }: { path: string }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center max-w-md p-6">
+        <h1 className="text-2xl font-bold mb-4">Page Not Found</h1>
+        <p className="text-muted-foreground mb-4">The path <code>{path}</code> doesn't exist.</p>
+        <div className="space-y-2">
+          <button 
+            onClick={() => window.location.href = '/'} 
+            className="px-4 py-2 bg-primary text-primary-foreground rounded w-full"
+          >
+            Go Home
+          </button>
+        </div>
+        <div className="mt-4 text-left">
+          <p className="text-sm text-muted-foreground mb-2">Available routes:</p>
+          <ul className="text-xs text-muted-foreground space-y-1">
+            {Object.keys(routes).map(route => (
+              <li key={route}>
+                <a href={route} className="hover:text-primary">{route}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
+}
 
+// Main app initialization
+async function initializeApp() {
+  console.log('🔧 Initializing MPA app...');
+  
   try {
-    // Load the page component
-    const PageComponent = await loadPageComponent();
+    // Check for root element
+    const rootElement = document.getElementById("root");
+    if (!rootElement) {
+      throw new Error("Root element #root not found in DOM");
+    }
+    console.log('✅ Root element found');
+
+    // Create React root
+    const root = createRoot(rootElement);
+    console.log('✅ React root created');
+
+    // Get current path
+    const currentPath = getCurrentPath();
     
-    // Render the actual page
-    reactRoot.render(
+    // Update title
+    updateTitle(currentPath);
+
+    // Show loading state
+    root.render(
+      <MPALayout>
+        <LoadingPage />
+        <Toaster />
+        <Sonner />
+      </MPALayout>
+    );
+    console.log('✅ Loading state rendered');
+
+    // Load route
+    const routeLoader = routes[currentPath as keyof typeof routes];
+    
+    if (!routeLoader) {
+      console.warn('⚠️ No route found for path:', currentPath);
+      root.render(
+        <MPALayout>
+          <NotFoundPage path={currentPath} />
+          <Toaster />
+          <Sonner />
+        </MPALayout>
+      );
+      return;
+    }
+
+    console.log('📦 Loading component for:', currentPath);
+    
+    // Dynamically import the component
+    const moduleImport = await routeLoader();
+    const PageComponent = moduleImport.default;
+    
+    if (!PageComponent) {
+      throw new Error(`Component for route ${currentPath} has no default export`);
+    }
+    
+    console.log('✅ Component loaded successfully');
+
+    // Render the page
+    root.render(
       <MPALayout>
         <PageComponent />
         <Toaster />
@@ -144,18 +204,64 @@ async function initializeApp() {
       </MPALayout>
     );
     
-    console.log('Page loaded successfully for:', window.location.pathname);
+    console.log('🎉 Page rendered successfully for:', currentPath);
+
+    // Initialize analytics after page loads
+    try {
+      const { initializeAnalytics } = await import("@/lib/analytics");
+      initializeAnalytics();
+      console.log('📊 Analytics initialized');
+    } catch (error) {
+      console.warn('⚠️ Analytics initialization failed:', error);
+    }
+
   } catch (error) {
-    console.error('Error loading page:', error);
-    reactRoot.render(
-      <MPALayout>
-        <ErrorPage error={error as Error} />
-        <Toaster />
-        <Sonner />
-      </MPALayout>
-    );
+    console.error('💥 App initialization failed:', error);
+    
+    // Try to render error page
+    try {
+      const rootElement = document.getElementById("root");
+      if (rootElement) {
+        const root = createRoot(rootElement);
+        root.render(
+          <MPALayout>
+            <ErrorPage error={error as Error} path={getCurrentPath()} />
+            <Toaster />
+            <Sonner />
+          </MPALayout>
+        );
+      }
+    } catch (renderError) {
+      console.error('💥 Failed to render error page:', renderError);
+      // Last resort: show basic error in DOM
+      const rootElement = document.getElementById("root");
+      if (rootElement) {
+        rootElement.innerHTML = `
+          <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+            <h1 style="color: red;">MPA App Failed to Load</h1>
+            <p>Path: ${getCurrentPath()}</p>
+            <p>Error: ${(error as Error).message}</p>
+            <button onclick="window.location.reload()" style="padding: 10px 20px; margin: 10px;">Reload</button>
+            <button onclick="window.location.href='/'" style="padding: 10px 20px; margin: 10px;">Go Home</button>
+          </div>
+        `;
+      }
+    }
   }
 }
 
-// Initialize the app
-initializeApp();
+// Add error handler for unhandled errors
+window.addEventListener('error', (event) => {
+  console.error('🚨 Unhandled error:', event.error);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('🚨 Unhandled promise rejection:', event.reason);
+});
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}
