@@ -78,7 +78,32 @@ export function createServer() {
     const spaDir = path.resolve("dist/spa");
     app.use(express.static(spaDir));
 
-    // SPA fallback: serve index.html for all non-API routes
+    // MPA routing: serve specific HTML files for routes
+    const routes = [
+      { path: "/bundles", file: "bundles.html" },
+      { path: "/contact", file: "contact.html" },
+      { path: "/faq", file: "faq.html" },
+      { path: "/custom-order", file: "custom-order.html" },
+      { path: "/terms", file: "terms.html" },
+      { path: "/privacy", file: "privacy.html" },
+      { path: "/login", file: "login.html" },
+      { path: "/register", file: "register.html" },
+      { path: "/forgot-password", file: "forgot-password.html" },
+      { path: "/email-confirmation", file: "email-confirmation.html" },
+      { path: "/account", file: "account.html" },
+      { path: "/cart", file: "cart.html" },
+      { path: "/checkout", file: "checkout.html" },
+      { path: "/admin", file: "admin.html" },
+    ];
+
+    // Register route handlers
+    routes.forEach(route => {
+      app.get(route.path, (req, res) => {
+        res.sendFile(path.join(spaDir, route.file));
+      });
+    });
+
+    // Default fallback: serve index.html for unmatched routes (except API)
     app.get("*", (req, res) => {
       // Don't serve index.html for API routes
       if (req.path.startsWith("/api/")) {
