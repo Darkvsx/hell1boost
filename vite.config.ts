@@ -4,7 +4,6 @@ import path from "path";
 import { createServer } from "./server";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -24,7 +23,6 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       input: {
-        // Main pages - these will create separate bundles
         main: path.resolve(__dirname, 'client/entries/index.tsx'),
         bundles: path.resolve(__dirname, 'client/entries/bundles.tsx'),
         contact: path.resolve(__dirname, 'client/entries/contact.tsx'),
@@ -46,24 +44,12 @@ export default defineConfig(({ mode }) => ({
         chunkFileNames: `chunks/[name]-[hash].js`,
         assetFileNames: `assets/[name]-[hash].[ext]`,
         manualChunks: (id) => {
-          if (id.includes("node_modules/react")) {
-            return "vendor-react";
-          }
-          if (id.includes("@radix-ui")) {
-            return "vendor-ui";
-          }
-          if (id.includes("lucide-react")) {
-            return "vendor-icons";
-          }
-          if (id.includes("@supabase")) {
-            return "vendor-supabase";
-          }
-          if (id.includes("@tanstack/react-query")) {
-            return "vendor-query";
-          }
-          if (id.includes("node_modules")) {
-            return "vendor-misc";
-          }
+          if (id.includes("node_modules/react")) return "vendor-react";
+          if (id.includes("@radix-ui")) return "vendor-ui";
+          if (id.includes("lucide-react")) return "vendor-icons";
+          if (id.includes("@supabase")) return "vendor-supabase";
+          if (id.includes("@tanstack/react-query")) return "vendor-query";
+          if (id.includes("node_modules")) return "vendor-misc";
         },
       },
     },
@@ -99,7 +85,6 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     expressPlugin(),
     mode === "production" && htmlPlugin(),
-    mode === "development" && devMPAPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -120,43 +105,29 @@ function expressPlugin(): Plugin {
   };
 }
 
-// Development MPA plugin - serves correct pages based on URL
-function devMPAPlugin(): Plugin {
-  return {
-    name: "dev-mpa",
-    apply: "serve",
-    configureServer(server) {
-      // No URL rewriting needed - let Vite handle the HTML files directly
-      // The HTML files will reference the .tsx files in development
-    },
-  };
-}
-
-// Production HTML generation plugin
 function htmlPlugin(): Plugin {
   return {
     name: "html-generator",
     generateBundle() {
       const pages = [
-        { name: 'index', title: 'HelldiversBoost - Professional Helldivers 2 Boosting Services' },
-        { name: 'bundles', title: 'Bundles - HelldiversBoost' },
-        { name: 'contact', title: 'Contact - HelldiversBoost' },
-        { name: 'faq', title: 'FAQ - HelldiversBoost' },
-        { name: 'custom-order', title: 'Custom Order - HelldiversBoost' },
-        { name: 'terms', title: 'Terms of Service - HelldiversBoost' },
-        { name: 'privacy', title: 'Privacy Policy - HelldiversBoost' },
-        { name: 'login', title: 'Login - HelldiversBoost' },
-        { name: 'register', title: 'Register - HelldiversBoost' },
-        { name: 'forgot-password', title: 'Forgot Password - HelldiversBoost' },
-        { name: 'email-confirmation', title: 'Email Confirmation - HelldiversBoost' },
-        { name: 'account', title: 'Account - HelldiversBoost' },
-        { name: 'cart', title: 'Shopping Cart - HelldiversBoost' },
-        { name: 'checkout', title: 'Checkout - HelldiversBoost' },
-        { name: 'admin', title: 'Admin Dashboard - HelldiversBoost' },
+        { name: 'index', entry: 'main', title: 'HelldiversBoost - Professional Helldivers 2 Boosting Services' },
+        { name: 'bundles', entry: 'bundles', title: 'Bundles - HelldiversBoost' },
+        { name: 'contact', entry: 'contact', title: 'Contact - HelldiversBoost' },
+        { name: 'faq', entry: 'faq', title: 'FAQ - HelldiversBoost' },
+        { name: 'custom-order', entry: 'custom-order', title: 'Custom Order - HelldiversBoost' },
+        { name: 'terms', entry: 'terms', title: 'Terms of Service - HelldiversBoost' },
+        { name: 'privacy', entry: 'privacy', title: 'Privacy Policy - HelldiversBoost' },
+        { name: 'login', entry: 'login', title: 'Login - HelldiversBoost' },
+        { name: 'register', entry: 'register', title: 'Register - HelldiversBoost' },
+        { name: 'forgot-password', entry: 'forgot-password', title: 'Forgot Password - HelldiversBoost' },
+        { name: 'email-confirmation', entry: 'email-confirmation', title: 'Email Confirmation - HelldiversBoost' },
+        { name: 'account', entry: 'account', title: 'Account - HelldiversBoost' },
+        { name: 'cart', entry: 'cart', title: 'Shopping Cart - HelldiversBoost' },
+        { name: 'checkout', entry: 'checkout', title: 'Checkout - HelldiversBoost' },
+        { name: 'admin', entry: 'admin', title: 'Admin Dashboard - HelldiversBoost' },
       ];
 
       pages.forEach(page => {
-        const entryName = page.name === 'index' ? 'main' : page.name;
         const htmlContent = `<!doctype html>
 <html lang="en">
   <head>
@@ -168,7 +139,7 @@ function htmlPlugin(): Plugin {
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/${entryName}.js"></script>
+    <script type="module" src="/${page.entry}.js"></script>
   </body>
 </html>`;
 
