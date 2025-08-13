@@ -93,12 +93,7 @@ export function MPANavbar() {
     if (href === "/") {
       return currentPath === "/" || currentPath === "/index.html";
     }
-    const pathWithoutExtension = href.replace(".html", "");
-    return (
-      currentPath === href ||
-      currentPath === pathWithoutExtension ||
-      currentPath === pathWithoutExtension + "/"
-    );
+    return currentPath === href || currentPath === href + "/";
   };
 
   return (
