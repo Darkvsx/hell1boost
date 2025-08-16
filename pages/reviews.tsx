@@ -170,16 +170,55 @@ export default function Reviews() {
 
   if (reviewsError || statsError) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Reviews</h1>
-          <p className="text-muted-foreground mb-4">
-            {reviewsError || statsError}
-          </p>
-          <Button onClick={() => window.location.reload()}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Retry
-          </Button>
+      <div className="min-h-screen bg-background">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <Card className="border-destructive">
+            <CardContent className="p-8">
+              <div className="text-center">
+                <AlertTriangle className="w-16 h-16 text-destructive mx-auto mb-4" />
+                <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Reviews</h1>
+                <p className="text-muted-foreground mb-6">
+                  {reviewsError || statsError}
+                </p>
+
+                {connectionTest && !connectionTest.success && (
+                  <Alert variant="destructive" className="mb-6 text-left">
+                    <Database className="h-4 w-4" />
+                    <AlertDescription>
+                      <div className="space-y-2">
+                        <p><strong>Database Connection Issue:</strong> {connectionTest.error}</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowConnectionDetails(!showConnectionDetails)}
+                        >
+                          {showConnectionDetails ? 'Hide' : 'Show'} Technical Details
+                        </Button>
+                        {showConnectionDetails && connectionTest.details && (
+                          <pre className="text-xs bg-muted p-2 rounded mt-2 overflow-auto">
+                            {JSON.stringify(connectionTest.details, null, 2)}
+                          </pre>
+                        )}
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="flex gap-4 justify-center">
+                  <Button onClick={() => window.location.reload()}>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Retry
+                  </Button>
+                  <Button variant="outline" onClick={() => {
+                    testSupabaseConnection().then(setConnectionTest);
+                  }}>
+                    <Database className="w-4 h-4 mr-2" />
+                    Test Connection
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
