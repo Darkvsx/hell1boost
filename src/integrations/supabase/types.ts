@@ -993,6 +993,122 @@ export type Database = {
         };
         Relationships: [];
       };
+      reviews: {
+        Row: {
+          id: string;
+          order_id: string | null;
+          user_id: string | null;
+          customer_name: string;
+          customer_email: string;
+          rating: number;
+          title: string;
+          content: string;
+          purchased_item: string;
+          purchase_value: number;
+          order_type: string;
+          completion_time_hours: number | null;
+          verified_purchase: boolean | null;
+          helpful_count: number | null;
+          reported_count: number | null;
+          is_featured: boolean | null;
+          is_approved: boolean | null;
+          admin_notes: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          order_id?: string | null;
+          user_id?: string | null;
+          customer_name: string;
+          customer_email: string;
+          rating: number;
+          title: string;
+          content: string;
+          purchased_item: string;
+          purchase_value: number;
+          order_type: string;
+          completion_time_hours?: number | null;
+          verified_purchase?: boolean | null;
+          helpful_count?: number | null;
+          reported_count?: number | null;
+          is_featured?: boolean | null;
+          is_approved?: boolean | null;
+          admin_notes?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          order_id?: string | null;
+          user_id?: string | null;
+          customer_name?: string;
+          customer_email?: string;
+          rating?: number;
+          title?: string;
+          content?: string;
+          purchased_item?: string;
+          purchase_value?: number;
+          order_type?: string;
+          completion_time_hours?: number | null;
+          verified_purchase?: boolean | null;
+          helpful_count?: number | null;
+          reported_count?: number | null;
+          is_featured?: boolean | null;
+          is_approved?: boolean | null;
+          admin_notes?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reviews_order_id_fkey";
+            columns: ["order_id"];
+            referencedRelation: "unified_orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reviews_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      review_helpful: {
+        Row: {
+          id: string;
+          review_id: string | null;
+          user_id: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          review_id?: string | null;
+          user_id?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          review_id?: string | null;
+          user_id?: string | null;
+          created_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "review_helpful_review_id_fkey";
+            columns: ["review_id"];
+            referencedRelation: "reviews";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "review_helpful_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {};
     Functions: {
