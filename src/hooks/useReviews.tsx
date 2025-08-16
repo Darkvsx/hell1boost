@@ -129,8 +129,13 @@ export function useReviews() {
       }
 
       // Check for specific Supabase errors
-      if (errorMessage.includes('relation "reviews" does not exist')) {
-        errorMessage = 'Reviews table not found. Please contact support to set up the database.';
+      if (errorMessage.includes('relation "reviews" does not exist') ||
+          errorMessage.includes('table "reviews" does not exist')) {
+        console.warn('Reviews table not found, using fallback data');
+        setUseFallback(true);
+        // Retry with fallback data
+        await fetchReviews(filters);
+        return;
       } else if (errorMessage.includes('JWT')) {
         errorMessage = 'Authentication error. Please try logging in again.';
       } else if (errorMessage.includes('permission')) {
