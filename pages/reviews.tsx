@@ -45,6 +45,8 @@ export default function Reviews() {
 
   const [filteredReviews, setFilteredReviews] = useState<Review[]>([]);
   const [helpfulStates, setHelpfulStates] = useState<Record<string, boolean>>({});
+  const [connectionTest, setConnectionTest] = useState<any>(null);
+  const [showConnectionDetails, setShowConnectionDetails] = useState(false);
 
   // Filter and sort reviews
   useEffect(() => {
