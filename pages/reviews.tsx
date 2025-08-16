@@ -18,161 +18,42 @@ import {
   Quote,
   Award,
   ThumbsUp,
-  SortDesc
+  SortDesc,
+  RefreshCw
 } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
+import { useReviews, useReviewStats, useReviewHelpful } from "@/hooks/useReviews";
+import { useAuth } from "@/hooks/useAuth";
+import type { Tables } from "@/integrations/supabase/types";
 
-interface Review {
-  id: string;
-  customerName: string;
-  customerInitials: string;
-  rating: number;
-  title: string;
-  content: string;
-  orderType: "Bundle" | "Service" | "Custom";
-  purchasedItem: string;
-  purchaseValue: number;
-  completionTime: string;
-  verifiedPurchase: boolean;
-  helpful: number;
-  date: string;
-  orderNumber: string;
-  tags: string[];
-}
-
-// Mock reviews data - in real app this would come from your database
-const mockReviews: Review[] = [
-  {
-    id: "1",
-    customerName: "Alex M.",
-    customerInitials: "AM",
-    rating: 5,
-    title: "Outstanding service! Got my account maxed super fast",
-    content: "The team was incredibly professional and efficient. They completed my level boost in just 6 hours when they estimated 8-12. Communication was excellent throughout the process and they even threw in some extra stratagem unlocks. Definitely recommend!",
-    orderType: "Bundle",
-    purchasedItem: "Elite Helldiver Bundle",
-    purchaseValue: 89.99,
-    completionTime: "6 hours",
-    verifiedPurchase: true,
-    helpful: 24,
-    date: "2025-01-15",
-    orderNumber: "HD-2025-1234",
-    tags: ["Fast Delivery", "Great Communication", "Bonus Content"]
-  },
-  {
-    id: "2",
-    customerName: "Sarah K.",
-    customerInitials: "SK",
-    rating: 5,
-    title: "Best boosting service I've used",
-    content: "I've tried other services before but this one is by far the best. The boosters are clearly skilled players and they maintained my K/D ratio while completing the missions. Worth every penny!",
-    orderType: "Service",
-    purchasedItem: "Liberation Campaign Completion",
-    purchaseValue: 45.00,
-    completionTime: "4 hours",
-    verifiedPurchase: true,
-    helpful: 18,
-    date: "2025-01-14",
-    orderNumber: "HD-2025-1189",
-    tags: ["Skilled Team", "K/D Maintained", "Value for Money"]
-  },
-  {
-    id: "3",
-    customerName: "Mike R.",
-    customerInitials: "MR",
-    rating: 4,
-    title: "Great results, minor delay but excellent quality",
-    content: "The service took a bit longer than expected due to server issues, but the team kept me updated throughout. The final result was exactly what I wanted - all my mission objectives completed with bonus samples collected.",
-    orderType: "Custom",
-    purchasedItem: "Custom Mission Package",
-    purchaseValue: 65.50,
-    completionTime: "10 hours",
-    verifiedPurchase: true,
-    helpful: 12,
-    date: "2025-01-13",
-    orderNumber: "HD-2025-1156",
-    tags: ["Good Communication", "Bonus Samples", "Delayed but Quality"]
-  },
-  {
-    id: "4",
-    customerName: "Emily T.",
-    customerInitials: "ET",
-    rating: 5,
-    title: "Incredible attention to detail",
-    content: "Not only did they complete all my objectives, but they also optimized my loadout and gave me strategic tips for future missions. The personal touch really sets them apart from other services.",
-    orderType: "Bundle",
-    purchasedItem: "Super Earth Elite Package",
-    purchaseValue: 129.99,
-    completionTime: "8 hours",
-    verifiedPurchase: true,
-    helpful: 31,
-    date: "2025-01-12",
-    orderNumber: "HD-2025-1098",
-    tags: ["Loadout Optimization", "Strategic Tips", "Personal Touch"]
-  },
-  {
-    id: "5",
-    customerName: "David L.",
-    customerInitials: "DL",
-    rating: 5,
-    title: "Exceeded expectations completely",
-    content: "I ordered a simple level boost but they went above and beyond. Completed extra side missions, unlocked rare stratagems I didn't even know about, and left detailed notes about the best strategies. 10/10 would use again!",
-    orderType: "Service",
-    purchasedItem: "Level 50 Power Boost",
-    purchaseValue: 39.99,
-    completionTime: "5 hours",
-    verifiedPurchase: true,
-    helpful: 27,
-    date: "2025-01-11",
-    orderNumber: "HD-2025-1034",
-    tags: ["Above and Beyond", "Rare Unlocks", "Detailed Notes"]
-  },
-  {
-    id: "6",
-    customerName: "Jessica W.",
-    customerInitials: "JW",
-    rating: 4,
-    title: "Solid service with room for improvement",
-    content: "The boosting was completed as promised and the final result was good. Communication could have been better during the middle phase, but they made up for it with faster completion than expected.",
-    orderType: "Service",
-    purchasedItem: "Difficulty 9 Campaign Clear",
-    purchaseValue: 75.00,
-    completionTime: "7 hours",
-    verifiedPurchase: true,
-    helpful: 9,
-    date: "2025-01-10",
-    orderNumber: "HD-2025-0987",
-    tags: ["Fast Completion", "Good Results", "Communication"]
-  }
-];
+type Review = Tables<'reviews'>;
 
 export default function Reviews() {
-  const [reviews, setReviews] = useState<Review[]>(mockReviews);
-  const [filteredReviews, setFilteredReviews] = useState<Review[]>(mockReviews);
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [ratingFilter, setRatingFilter] = useState<string>("all");
   const [orderTypeFilter, setOrderTypeFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
 
-  // Calculate stats
-  const totalReviews = reviews.length;
-  const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews;
-  const fiveStarCount = reviews.filter(r => r.rating === 5).length;
-  const fourStarCount = reviews.filter(r => r.rating === 4).length;
-  const threeStarCount = reviews.filter(r => r.rating === 3).length;
-  const twoStarCount = reviews.filter(r => r.rating === 2).length;
-  const oneStarCount = reviews.filter(r => r.rating === 1).length;
+  const { reviews, loading: reviewsLoading, error: reviewsError, refetch } = useReviews();
+  const { stats, loading: statsLoading, error: statsError } = useReviewStats();
+  const { toggleHelpful, loading: helpfulLoading } = useReviewHelpful();
 
+  const [filteredReviews, setFilteredReviews] = useState<Review[]>([]);
+  const [helpfulStates, setHelpfulStates] = useState<Record<string, boolean>>({});
+
+  // Filter and sort reviews
   useEffect(() => {
     let filtered = [...reviews];
 
     // Search filter
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(review =>
-        review.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        review.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        review.purchasedItem.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        review.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+        review.title.toLowerCase().includes(query) ||
+        review.content.toLowerCase().includes(query) ||
+        review.purchased_item.toLowerCase().includes(query) ||
+        review.customer_name.toLowerCase().includes(query)
       );
     }
 
@@ -183,31 +64,43 @@ export default function Reviews() {
 
     // Order type filter
     if (orderTypeFilter !== "all") {
-      filtered = filtered.filter(review => review.orderType === orderTypeFilter);
+      filtered = filtered.filter(review => review.order_type === orderTypeFilter);
     }
 
     // Sort
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "newest":
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
         case "oldest":
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
+          return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
         case "highest-rated":
           return b.rating - a.rating;
         case "lowest-rated":
           return a.rating - b.rating;
         case "most-helpful":
-          return b.helpful - a.helpful;
+          return (b.helpful_count || 0) - (a.helpful_count || 0);
         default:
           return 0;
       }
     });
 
     setFilteredReviews(filtered);
-  }, [searchQuery, ratingFilter, orderTypeFilter, sortBy, reviews]);
+  }, [reviews, searchQuery, ratingFilter, orderTypeFilter, sortBy]);
 
-  const formatDate = (dateString: string) => {
+  // Refetch with filters
+  useEffect(() => {
+    const filters = {
+      searchQuery: searchQuery || undefined,
+      rating: ratingFilter !== "all" ? parseInt(ratingFilter) : undefined,
+      orderType: orderTypeFilter !== "all" ? orderTypeFilter : undefined,
+      sortBy: sortBy as any,
+    };
+    refetch(filters);
+  }, [searchQuery, ratingFilter, orderTypeFilter, sortBy, refetch]);
+
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -216,9 +109,65 @@ export default function Reviews() {
   };
 
   const getRatingPercentage = (rating: number) => {
-    const count = reviews.filter(r => r.rating === rating).length;
-    return Math.round((count / totalReviews) * 100);
+    if (!stats) return 0;
+    const count = stats.ratingBreakdown[rating] || 0;
+    return Math.round((count / stats.totalReviews) * 100);
   };
+
+  const getOrderTypeLabel = (type: string) => {
+    switch (type) {
+      case 'bundle':
+        return 'Bundle';
+      case 'service':
+        return 'Service';
+      case 'custom':
+        return 'Custom';
+      default:
+        return type;
+    }
+  };
+
+  const handleHelpfulClick = async (reviewId: string) => {
+    if (!user) return;
+
+    try {
+      const wasHelpful = await toggleHelpful(reviewId);
+      setHelpfulStates(prev => ({
+        ...prev,
+        [reviewId]: wasHelpful
+      }));
+      // Refresh reviews to update helpful count
+      refetch();
+    } catch (error) {
+      console.error('Error toggling helpful:', error);
+    }
+  };
+
+  const getCustomerInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  if (reviewsError || statsError) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">Unable to Load Reviews</h1>
+          <p className="text-muted-foreground mb-4">
+            {reviewsError || statsError}
+          </p>
+          <Button onClick={() => window.location.reload()}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -245,85 +194,106 @@ export default function Reviews() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Average Rating</p>
-                    <div className="flex items-center mt-2">
-                      <span className="text-3xl font-bold text-foreground">{averageRating.toFixed(1)}</span>
-                      <Star className="w-6 h-6 text-yellow-400 fill-yellow-400 ml-2" />
+          {statsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-6">
+                    <div className="animate-pulse">
+                      <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                      <div className="h-8 bg-muted rounded w-1/2"></div>
                     </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : stats && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Average Rating</p>
+                      <div className="flex items-center mt-2">
+                        <span className="text-3xl font-bold text-foreground">
+                          {stats.averageRating.toFixed(1)}
+                        </span>
+                        <Star className="w-6 h-6 text-yellow-400 fill-yellow-400 ml-2" />
+                      </div>
+                    </div>
+                    <TrendingUp className="w-8 h-8 text-primary" />
                   </div>
-                  <TrendingUp className="w-8 h-8 text-primary" />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Total Reviews</p>
-                    <p className="text-3xl font-bold text-foreground mt-2">{totalReviews}</p>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total Reviews</p>
+                      <p className="text-3xl font-bold text-foreground mt-2">{stats.totalReviews}</p>
+                    </div>
+                    <Users className="w-8 h-8 text-primary" />
                   </div>
-                  <Users className="w-8 h-8 text-primary" />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">5-Star Reviews</p>
-                    <p className="text-3xl font-bold text-foreground mt-2">{Math.round((fiveStarCount / totalReviews) * 100)}%</p>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">5-Star Reviews</p>
+                      <p className="text-3xl font-bold text-foreground mt-2">
+                        {getRatingPercentage(5)}%
+                      </p>
+                    </div>
+                    <Star className="w-8 h-8 text-yellow-400 fill-yellow-400" />
                   </div>
-                  <Star className="w-8 h-8 text-yellow-400 fill-yellow-400" />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Verified Purchases</p>
-                    <p className="text-3xl font-bold text-foreground mt-2">100%</p>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Verified Purchases</p>
+                      <p className="text-3xl font-bold text-foreground mt-2">100%</p>
+                    </div>
+                    <CheckCircle2 className="w-8 h-8 text-green-500" />
                   </div>
-                  <CheckCircle2 className="w-8 h-8 text-green-500" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           {/* Rating Breakdown */}
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Rating Breakdown</h3>
-              <div className="space-y-3">
-                {[5, 4, 3, 2, 1].map((rating) => {
-                  const count = reviews.filter(r => r.rating === rating).length;
-                  const percentage = (count / totalReviews) * 100;
-                  
-                  return (
-                    <div key={rating} className="flex items-center gap-2">
-                      <span className="text-sm font-medium w-8">{rating}</span>
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <div className="flex-1 bg-muted rounded-full h-2">
-                        <div 
-                          className="bg-yellow-400 rounded-full h-2 transition-all duration-300"
-                          style={{ width: `${percentage}%` }}
-                        />
+          {stats && (
+            <Card className="mb-8">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Rating Breakdown</h3>
+                <div className="space-y-3">
+                  {[5, 4, 3, 2, 1].map((rating) => {
+                    const count = stats.ratingBreakdown[rating] || 0;
+                    const percentage = stats.totalReviews > 0 ? (count / stats.totalReviews) * 100 : 0;
+                    
+                    return (
+                      <div key={rating} className="flex items-center gap-2">
+                        <span className="text-sm font-medium w-8">{rating}</span>
+                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        <div className="flex-1 bg-muted rounded-full h-2">
+                          <div 
+                            className="bg-yellow-400 rounded-full h-2 transition-all duration-300"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                        <span className="text-sm text-muted-foreground w-12">{count}</span>
                       </div>
-                      <span className="text-sm text-muted-foreground w-12">{count}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Filters and Search */}
           <Card className="mb-8">
@@ -362,9 +332,9 @@ export default function Reviews() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="Bundle">Bundle</SelectItem>
-                      <SelectItem value="Service">Service</SelectItem>
-                      <SelectItem value="Custom">Custom</SelectItem>
+                      <SelectItem value="bundle">Bundle</SelectItem>
+                      <SelectItem value="service">Service</SelectItem>
+                      <SelectItem value="custom">Custom</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -388,137 +358,165 @@ export default function Reviews() {
           {/* Results count */}
           <div className="mb-6">
             <p className="text-muted-foreground">
-              Showing {filteredReviews.length} of {totalReviews} reviews
+              Showing {filteredReviews.length} of {reviews.length} reviews
             </p>
           </div>
 
+          {/* Loading State */}
+          {reviewsLoading && (
+            <div className="space-y-6">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-6">
+                    <div className="animate-pulse">
+                      <div className="flex gap-4 mb-4">
+                        <div className="w-12 h-12 bg-muted rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-muted rounded w-1/4 mb-2"></div>
+                          <div className="h-3 bg-muted rounded w-1/3"></div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                        <div className="h-3 bg-muted rounded w-full"></div>
+                        <div className="h-3 bg-muted rounded w-2/3"></div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
           {/* Reviews List */}
-          <div className="space-y-6">
-            {filteredReviews.map((review) => (
-              <Card key={review.id} className="hover:shadow-lg transition-shadow duration-200">
-                <CardContent className="p-6">
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Customer Info */}
-                    <div className="flex-shrink-0">
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
-                          {review.customerInitials}
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-foreground">{review.customerName}</h4>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500" />
-                            <span className="text-sm text-muted-foreground">Verified Purchase</span>
+          {!reviewsLoading && (
+            <div className="space-y-6">
+              {filteredReviews.map((review) => (
+                <Card key={review.id} className="hover:shadow-lg transition-shadow duration-200">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col lg:flex-row gap-6">
+                      {/* Customer Info */}
+                      <div className="flex-shrink-0">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
+                            {getCustomerInitials(review.customer_name)}
                           </div>
+                          <div>
+                            <h4 className="font-semibold text-foreground">{review.customer_name}</h4>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="w-4 h-4 text-green-500" />
+                              <span className="text-sm text-muted-foreground">Verified Purchase</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Review Content */}
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <StarRating rating={review.rating} size="md" />
+                              <Badge variant="outline" className="text-xs">
+                                {getOrderTypeLabel(review.order_type)}
+                              </Badge>
+                              {review.is_featured && (
+                                <Badge className="text-xs bg-primary">
+                                  Featured
+                                </Badge>
+                              )}
+                            </div>
+                            <h3 className="text-lg font-semibold text-foreground mb-2">{review.title}</h3>
+                          </div>
+                          <div className="text-right text-sm text-muted-foreground">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Calendar className="w-4 h-4" />
+                              {formatDate(review.created_at)}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-2 mb-4">
+                          <Quote className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                          <p className="text-foreground leading-relaxed">{review.content}</p>
+                        </div>
+
+                        {/* Purchase Details */}
+                        <div className="bg-muted/50 rounded-lg p-4 mb-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="flex items-center gap-2">
+                              <Package className="w-4 h-4 text-primary" />
+                              <div>
+                                <p className="text-xs text-muted-foreground">Purchased</p>
+                                <p className="text-sm font-medium">{review.purchased_item}</p>
+                              </div>
+                            </div>
+                            {review.completion_time_hours && (
+                              <div className="flex items-center gap-2">
+                                <Timer className="w-4 h-4 text-primary" />
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Completed in</p>
+                                  <p className="text-sm font-medium">{review.completion_time_hours} hours</p>
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <TrendingUp className="w-4 h-4 text-primary" />
+                              <div>
+                                <p className="text-xs text-muted-foreground">Order Value</p>
+                                <p className="text-sm font-medium">${review.purchase_value}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center justify-between">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-muted-foreground hover:text-foreground"
+                            onClick={() => handleHelpfulClick(review.id)}
+                            disabled={!user || helpfulLoading}
+                          >
+                            <ThumbsUp className="w-4 h-4 mr-1" />
+                            Helpful ({review.helpful_count || 0})
+                          </Button>
                         </div>
                       </div>
                     </div>
-
-                    {/* Review Content */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <StarRating rating={review.rating} size="md" />
-                            <Badge variant="outline" className="text-xs">
-                              {review.orderType}
-                            </Badge>
-                          </div>
-                          <h3 className="text-lg font-semibold text-foreground mb-2">{review.title}</h3>
-                        </div>
-                        <div className="text-right text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1 mb-1">
-                            <Calendar className="w-4 h-4" />
-                            {formatDate(review.date)}
-                          </div>
-                          <div className="text-xs">#{review.orderNumber}</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-2 mb-4">
-                        <Quote className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
-                        <p className="text-foreground leading-relaxed">{review.content}</p>
-                      </div>
-
-                      {/* Purchase Details */}
-                      <div className="bg-muted/50 rounded-lg p-4 mb-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="flex items-center gap-2">
-                            <Package className="w-4 h-4 text-primary" />
-                            <div>
-                              <p className="text-xs text-muted-foreground">Purchased</p>
-                              <p className="text-sm font-medium">{review.purchasedItem}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Timer className="w-4 h-4 text-primary" />
-                            <div>
-                              <p className="text-xs text-muted-foreground">Completed in</p>
-                              <p className="text-sm font-medium">{review.completionTime}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <TrendingUp className="w-4 h-4 text-primary" />
-                            <div>
-                              <p className="text-xs text-muted-foreground">Order Value</p>
-                              <p className="text-sm font-medium">${review.purchaseValue}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {review.tags.map((tag, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center justify-between">
-                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                          <ThumbsUp className="w-4 h-4 mr-1" />
-                          Helpful ({review.helpful})
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Load More Button (placeholder for pagination) */}
-          {filteredReviews.length === totalReviews && totalReviews > 0 && (
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg">
-                <SortDesc className="w-4 h-4 mr-2" />
-                Load More Reviews
-              </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
 
           {/* Empty State */}
-          {filteredReviews.length === 0 && (
+          {!reviewsLoading && filteredReviews.length === 0 && (
             <div className="text-center py-12">
               <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-8 h-8 text-muted-foreground" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">No Reviews Found</h3>
-              <p className="text-muted-foreground">Try adjusting your search or filter criteria.</p>
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => {
-                  setSearchQuery("");
-                  setRatingFilter("all");
-                  setOrderTypeFilter("all");
-                }}
-              >
-                Clear Filters
-              </Button>
+              <p className="text-muted-foreground">
+                {reviews.length === 0 
+                  ? "Be the first to leave a review!" 
+                  : "Try adjusting your search or filter criteria."
+                }
+              </p>
+              {reviews.length > 0 && (
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setRatingFilter("all");
+                    setOrderTypeFilter("all");
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              )}
             </div>
           )}
         </div>
