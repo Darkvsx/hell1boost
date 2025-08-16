@@ -224,8 +224,13 @@ export function useReviewStats() {
       }
 
       // Check for specific Supabase errors
-      if (errorMessage.includes('relation "reviews" does not exist')) {
-        errorMessage = 'Reviews table not found. Please contact support to set up the database.';
+      if (errorMessage.includes('relation "reviews" does not exist') ||
+          errorMessage.includes('table "reviews" does not exist')) {
+        console.warn('Reviews table not found, using fallback stats');
+        setUseFallback(true);
+        // Retry with fallback data
+        await fetchStats();
+        return;
       }
 
       setError(errorMessage);
