@@ -49,6 +49,7 @@ const navigation: NavigationItem[] = [
   { name: "Services", href: "/", icon: Crown },
   { name: "Bundles", href: "/bundles", icon: Package, badge: "Popular" },
   { name: "Custom Order", href: "/custom-order", icon: Settings, isNew: true },
+  { name: "Reviews", href: "/reviews", icon: Star },
   { name: "FAQ", href: "/faq" },
   { name: "Contact", href: "/contact" },
 ];
