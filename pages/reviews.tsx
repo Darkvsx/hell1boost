@@ -171,19 +171,22 @@ export default function Reviews() {
   };
 
   const handleDatabaseSetup = async () => {
-    if (!user?.role || user.role !== 'admin') {
-      alert('Only administrators can setup the database.');
-      return;
-    }
-
     setSetupInProgress(true);
     try {
-      const result = await insertSampleReviews();
+      // First try to add a test review (if table exists)
+      let result = await addTestReview();
+
       if (result.success) {
-        alert('Database setup completed successfully! Refreshing page...');
+        alert('Test review added successfully! Refreshing page...');
         window.location.reload();
       } else {
-        alert(`Database setup failed: ${result.error}`);
+        // If that fails, show the SQL to create the table
+        const tableResult = await createReviewsTableAndAddTestData();
+        if (tableResult.sql) {
+          alert(`Please copy this SQL and run it in your Supabase dashboard SQL editor:\n\n${tableResult.sql}`);
+        } else {
+          alert(`Database setup failed: ${result.error}`);
+        }
       }
     } catch (error) {
       alert('Database setup failed with an unexpected error.');
