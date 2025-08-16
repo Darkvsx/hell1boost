@@ -28,6 +28,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { useReviews, useReviewStats, useReviewHelpful } from "@/hooks/useReviews";
 import { useAuth } from "@/hooks/useAuth";
 import { testSupabaseConnection } from "@/lib/testSupabase";
+import { insertSampleReviews } from "@/lib/setupDatabase";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Review = Tables<'reviews'>;
