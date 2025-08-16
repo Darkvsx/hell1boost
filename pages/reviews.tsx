@@ -5,12 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { StarRating } from "@/components/ui/star-rating";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Search, 
-  Filter, 
-  TrendingUp, 
-  Users, 
-  Star, 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Search,
+  Filter,
+  TrendingUp,
+  Users,
+  Star,
   Calendar,
   Package,
   Timer,
@@ -19,11 +20,14 @@ import {
   Award,
   ThumbsUp,
   SortDesc,
-  RefreshCw
+  RefreshCw,
+  AlertTriangle,
+  Database
 } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import { useReviews, useReviewStats, useReviewHelpful } from "@/hooks/useReviews";
 import { useAuth } from "@/hooks/useAuth";
+import { testSupabaseConnection } from "@/lib/testSupabase";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Review = Tables<'reviews'>;
