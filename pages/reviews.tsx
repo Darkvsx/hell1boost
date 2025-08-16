@@ -242,7 +242,7 @@ export default function Reviews() {
                     <Database className="w-4 h-4 mr-2" />
                     Test Connection
                   </Button>
-                  {user?.role === 'admin' && connectionTest?.needsSchema && (
+                  {(reviewsError || statsError) && (
                     <Button
                       variant="default"
                       onClick={handleDatabaseSetup}
@@ -256,7 +256,7 @@ export default function Reviews() {
                       ) : (
                         <>
                           <Database className="w-4 h-4 mr-2" />
-                          Setup Database
+                          Create Table & Add Test Review
                         </>
                       )}
                     </Button>
