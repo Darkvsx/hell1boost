@@ -94,6 +94,16 @@ export default function Reviews() {
     setFilteredReviews(filtered);
   }, [reviews, searchQuery, ratingFilter, orderTypeFilter, sortBy]);
 
+  // Test Supabase connection on mount
+  useEffect(() => {
+    testSupabaseConnection().then(result => {
+      setConnectionTest(result);
+      if (!result.success) {
+        console.warn('Supabase connection test failed:', result);
+      }
+    });
+  }, []);
+
   // Refetch with filters
   useEffect(() => {
     const filters = {
