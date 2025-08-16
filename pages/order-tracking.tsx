@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useOrders } from "@/hooks/useOrders";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserReviews } from "@/hooks/useReviews";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,6 +17,8 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ReviewSubmissionModal } from "@/components/ReviewSubmissionModal";
 import {
   ArrowLeft,
   Package,
@@ -30,6 +33,8 @@ import {
   Trophy,
   Star,
   Eye,
+  Gift,
+  ThumbsUp,
 } from "lucide-react";
 
 export default function OrderTracking() {
