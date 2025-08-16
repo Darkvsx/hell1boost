@@ -39,9 +39,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground max-w-md">
-              Professional Helldivers 2 boosting services. Fast, secure, and
-              reliable gaming enhancement for the ultimate Super Earth
-              experience.
+              Fair, competitive, and reliable services.
             </p>
             <div className="flex items-center space-x-2 text-sm">
               <Shield className="w-4 h-4 text-green-600" />
