@@ -164,11 +164,19 @@ export function useReviewStats() {
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [useFallback, setUseFallback] = useState(false);
 
   const fetchStats = async () => {
     try {
       setLoading(true);
       setError(null);
+
+      // If we're in fallback mode, use mock data
+      if (useFallback) {
+        setStats(fallbackStats);
+        setLoading(false);
+        return;
+      }
 
       const { data: reviews, error: reviewsError } = await supabase
         .from('reviews')
