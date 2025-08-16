@@ -63,6 +63,14 @@ export default function OrderTracking() {
     }
   }, [orderId, getOrder, orders, loading, isInitialLoad]);
 
+  // Check if user has already reviewed this order
+  useEffect(() => {
+    if (orderId && userReviews) {
+      const existingReview = userReviews.find(review => review.order_id === orderId);
+      setHasReviewed(!!existingReview);
+    }
+  }, [orderId, userReviews]);
+
   // Show loading state while orders are being fetched
   if (loading && isInitialLoad) {
     return (
