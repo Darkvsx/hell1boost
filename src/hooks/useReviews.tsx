@@ -26,11 +26,56 @@ export function useReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [useFallback, setUseFallback] = useState(false);
 
   const fetchReviews = async (filters: ReviewFilters = {}) => {
     try {
       setLoading(true);
       setError(null);
+
+      // If we're in fallback mode, use mock data
+      if (useFallback) {
+        let filteredReviews = [...fallbackReviews];
+
+        // Apply filters to fallback data
+        if (filters.rating) {
+          filteredReviews = filteredReviews.filter(r => r.rating === filters.rating);
+        }
+        if (filters.orderType) {
+          filteredReviews = filteredReviews.filter(r => r.order_type === filters.orderType);
+        }
+        if (filters.searchQuery) {
+          const query = filters.searchQuery.toLowerCase();
+          filteredReviews = filteredReviews.filter(r =>
+            r.title.toLowerCase().includes(query) ||
+            r.content.toLowerCase().includes(query) ||
+            r.purchased_item.toLowerCase().includes(query) ||
+            r.customer_name.toLowerCase().includes(query)
+          );
+        }
+
+        // Apply sorting
+        switch (filters.sortBy) {
+          case 'oldest':
+            filteredReviews.sort((a, b) => new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime());
+            break;
+          case 'highest-rated':
+            filteredReviews.sort((a, b) => b.rating - a.rating);
+            break;
+          case 'lowest-rated':
+            filteredReviews.sort((a, b) => a.rating - b.rating);
+            break;
+          case 'most-helpful':
+            filteredReviews.sort((a, b) => (b.helpful_count || 0) - (a.helpful_count || 0));
+            break;
+          default: // newest
+            filteredReviews.sort((a, b) => new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime());
+        }
+
+        setReviews(filteredReviews);
+        setLoading(false);
+        return;
+      }
 
       let query = supabase
         .from('reviews')
