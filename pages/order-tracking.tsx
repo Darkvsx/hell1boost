@@ -42,10 +42,12 @@ export default function OrderTracking() {
   const { orderId } = router.query as { orderId: string };
   const { getOrder, addOrderMessage, orders, loading } = useOrders();
   const { user } = useAuth();
+  const { reviews: userReviews, refetch: refetchUserReviews } = useUserReviews();
   const [order, setOrder] = useState(getOrder(orderId || ""));
   const [newMessage, setNewMessage] = useState("");
   const [showMessages, setShowMessages] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [hasReviewed, setHasReviewed] = useState(false);
 
   useEffect(() => {
     if (orderId) {
