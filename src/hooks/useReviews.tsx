@@ -156,7 +156,20 @@ export function useReviewStats() {
       }
     } catch (err) {
       console.error('Error fetching review stats:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch review stats');
+      let errorMessage = 'Failed to fetch review stats';
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'object' && err !== null) {
+        errorMessage = JSON.stringify(err);
+      }
+
+      // Check for specific Supabase errors
+      if (errorMessage.includes('relation "reviews" does not exist')) {
+        errorMessage = 'Reviews table not found. Please contact support to set up the database.';
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
