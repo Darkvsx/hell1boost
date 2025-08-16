@@ -170,6 +170,28 @@ export default function Reviews() {
       .slice(0, 2);
   };
 
+  const handleDatabaseSetup = async () => {
+    if (!user?.role || user.role !== 'admin') {
+      alert('Only administrators can setup the database.');
+      return;
+    }
+
+    setSetupInProgress(true);
+    try {
+      const result = await insertSampleReviews();
+      if (result.success) {
+        alert('Database setup completed successfully! Refreshing page...');
+        window.location.reload();
+      } else {
+        alert(`Database setup failed: ${result.error}`);
+      }
+    } catch (error) {
+      alert('Database setup failed with an unexpected error.');
+    } finally {
+      setSetupInProgress(false);
+    }
+  };
+
   if (reviewsError || statsError) {
     return (
       <div className="min-h-screen bg-background">
