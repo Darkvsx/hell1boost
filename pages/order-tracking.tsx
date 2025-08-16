@@ -403,6 +403,79 @@ export default function OrderTracking() {
                 </CardContent>
               )}
             </Card>
+
+            {/* Review Prompt for Completed Orders */}
+            {order.status === 'completed' && !hasReviewed && (
+              <Card className="border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-green-800 dark:text-green-200">
+                    <Gift className="w-5 h-5 mr-2" />
+                    Share Your Experience
+                  </CardTitle>
+                  <CardDescription className="text-green-700 dark:text-green-300">
+                    Your order has been completed! Help other helldivers by leaving a review.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Alert className="border-green-300 bg-green-100 dark:bg-green-900/50">
+                      <ThumbsUp className="h-4 w-4 text-green-600" />
+                      <AlertDescription className="text-green-800 dark:text-green-200">
+                        Reviews help us improve our service and assist other customers in making informed decisions.
+                        Plus, featured reviews get special recognition!
+                      </AlertDescription>
+                    </Alert>
+
+                    <div className="flex gap-3">
+                      <ReviewSubmissionModal
+                        orderId={order.id}
+                        orderDetails={getOrderDetailsForReview()!}
+                        onSuccess={handleReviewSuccess}
+                        trigger={
+                          <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+                            <Star className="w-4 h-4 mr-2" />
+                            Write a Review
+                          </Button>
+                        }
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={() => setHasReviewed(true)}
+                        className="border-green-300 text-green-700 hover:bg-green-100 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900/50"
+                      >
+                        Maybe Later
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Review Status for Completed Orders */}
+            {order.status === 'completed' && hasReviewed && (
+              <Card className="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-blue-600 mr-3" />
+                      <div>
+                        <h4 className="font-semibold text-blue-800 dark:text-blue-200">
+                          Thank you for your review!
+                        </h4>
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                          Your feedback helps us improve our service.
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" asChild className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300">
+                      <Link href="/reviews">
+                        View All Reviews
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
