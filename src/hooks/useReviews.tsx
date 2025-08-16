@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { fallbackReviews } from '@/lib/reviewsFallback';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Review = Tables<'reviews'>;
