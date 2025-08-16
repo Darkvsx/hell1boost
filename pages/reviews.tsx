@@ -48,6 +48,7 @@ export default function Reviews() {
   const [helpfulStates, setHelpfulStates] = useState<Record<string, boolean>>({});
   const [connectionTest, setConnectionTest] = useState<any>(null);
   const [showConnectionDetails, setShowConnectionDetails] = useState(false);
+  const [setupInProgress, setSetupInProgress] = useState(false);
 
   // Filter and sort reviews
   useEffect(() => {
