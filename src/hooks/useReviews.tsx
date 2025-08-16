@@ -74,7 +74,24 @@ export function useReviews() {
       setReviews(data || []);
     } catch (err) {
       console.error('Error fetching reviews:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch reviews');
+      let errorMessage = 'Failed to fetch reviews';
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'object' && err !== null) {
+        errorMessage = JSON.stringify(err);
+      }
+
+      // Check for specific Supabase errors
+      if (errorMessage.includes('relation "reviews" does not exist')) {
+        errorMessage = 'Reviews table not found. Please contact support to set up the database.';
+      } else if (errorMessage.includes('JWT')) {
+        errorMessage = 'Authentication error. Please try logging in again.';
+      } else if (errorMessage.includes('permission')) {
+        errorMessage = 'Permission denied. Please check your account access.';
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
