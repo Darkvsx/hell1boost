@@ -5,8 +5,8 @@ import { fallbackReviews, fallbackStats } from '@/lib/reviewsFallback';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Review = Tables<'reviews'>;
-type ReviewInsert = Tables<'reviews'>['Insert'];
-type ReviewUpdate = Tables<'reviews'>['Update'];
+type ReviewInsert = any; // Simplified for now since table doesn't exist yet
+type ReviewUpdate = any; // Simplified for now since table doesn't exist yet
 
 interface ReviewFilters {
   searchQuery?: string;
