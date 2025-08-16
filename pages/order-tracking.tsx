@@ -162,6 +162,26 @@ export default function OrderTracking() {
     return new Date(dateString).toLocaleString();
   };
 
+  const handleReviewSuccess = () => {
+    setHasReviewed(true);
+    refetchUserReviews();
+  };
+
+  const getOrderDetailsForReview = () => {
+    if (!order) return null;
+
+    return {
+      orderNumber: order.id,
+      purchasedItem: order.services.map(s => s.name).join(', '),
+      purchaseValue: order.totalAmount,
+      orderType: order.services.length > 1 ? 'bundle' : 'service' as 'bundle' | 'service' | 'custom',
+      completionTimeHours: order.estimatedCompletion ?
+        Math.round((new Date().getTime() - new Date(order.createdAt).getTime()) / (1000 * 60 * 60)) :
+        undefined,
+      completedAt: order.status === 'completed' ? new Date().toISOString() : undefined,
+    };
+  };
+
   const getProgressPercentage = () => {
     switch (order.status) {
       case "pending":
