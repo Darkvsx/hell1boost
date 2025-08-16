@@ -228,7 +228,7 @@ export default function Reviews() {
                   </Alert>
                 )}
 
-                <div className="flex gap-4 justify-center">
+                <div className="flex gap-4 justify-center flex-wrap">
                   <Button onClick={() => window.location.reload()}>
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Retry
@@ -239,6 +239,25 @@ export default function Reviews() {
                     <Database className="w-4 h-4 mr-2" />
                     Test Connection
                   </Button>
+                  {user?.role === 'admin' && connectionTest?.needsSchema && (
+                    <Button
+                      variant="default"
+                      onClick={handleDatabaseSetup}
+                      disabled={setupInProgress}
+                    >
+                      {setupInProgress ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+                          Setting up...
+                        </>
+                      ) : (
+                        <>
+                          <Database className="w-4 h-4 mr-2" />
+                          Setup Database
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </div>
               </div>
             </CardContent>
