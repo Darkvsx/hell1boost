@@ -47,9 +47,8 @@ export default function TestStripePage() {
 
       // Test if our service ID exists in database
       console.log('🔍 Validating test service in database...');
-      const testServiceId = "5265efed-3187-4ede-943c-e01be26ef4f8";
-      console.log('📋 Using service ID:', testServiceId);
       const testServiceId = "5265efed-3187-4ede-943c-e01be26ef4f8"; // Level Boost (1-50) - $5.00
+      console.log('📋 Using service ID:', testServiceId);
 
       const testData = {
         services: [
