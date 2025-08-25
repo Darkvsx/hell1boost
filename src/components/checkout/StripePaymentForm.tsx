@@ -223,23 +223,31 @@ export function StripePaymentForm({
           description: `Ready to process payment of $${data.amount.toFixed(2)}`,
         });
       } catch (error: any) {
-        console.error("Error initializing payment:", {
-          error: error.message,
-          name: error.name,
-          stack: error.stack,
+        console.error("❌ Error initializing payment:", {
+          name: error?.name || 'Unknown',
+          message: error?.message || 'No message',
+          stack: error?.stack || 'No stack trace',
+          toString: error?.toString?.() || String(error)
         });
 
         let errorMessage = "Failed to initialize payment";
 
-        if (error.name === "AbortError") {
+        if (error?.name === "AbortError") {
           errorMessage =
             "Payment initialization timed out. Please check your connection and try again.";
-        } else if (error.message.includes("fetch")) {
+        } else if (error?.name === "TypeError" && error?.message?.includes("fetch")) {
           errorMessage =
             "Network error. Please check your connection and try again.";
-        } else if (error.message) {
+        } else if (error?.message) {
           errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          // Fallback for unexpected error types
+          errorMessage = `Unexpected error: ${error?.toString?.() || 'Unknown error'}`;
         }
+
+        console.error("🔧 Final error message:", errorMessage);
 
         setInitError(errorMessage);
         onPaymentError(errorMessage);
