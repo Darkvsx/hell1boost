@@ -261,11 +261,9 @@ export default async function handler(
       },
     };
 
-    // Add Venmo-specific configuration if capability is available
-    if (process.env.STRIPE_VENMO_CAPABILITY) {
-      paymentIntentParams.payment_method_configuration =
-        process.env.STRIPE_VENMO_CAPABILITY;
-    }
+    // Note: Venmo configuration removed as the provided capability ID is invalid
+    // If you need Venmo support, you'll need to create a valid payment method configuration in Stripe Dashboard
+    // and update the STRIPE_VENMO_CAPABILITY environment variable
 
     // Create payment intent following Stripe documentation
     console.log("Creating Stripe PaymentIntent...");
