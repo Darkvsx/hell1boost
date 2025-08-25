@@ -8,6 +8,25 @@ export default function TestStripePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string>('');
+  const [envCheck, setEnvCheck] = useState<any>(null);
+
+  const checkEnvironment = () => {
+    const checks = {
+      stripePublishableKey: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      supabaseAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      stripeKeyFormat: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.startsWith('pk_'),
+      supabaseUrlFormat: process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('supabase.co'),
+    };
+
+    const allPassed = Object.values(checks).every(check => check === true);
+
+    setEnvCheck({
+      ...checks,
+      allPassed,
+      timestamp: new Date().toISOString()
+    });
+  };
 
   const testPaymentIntentCreation = async () => {
     setIsLoading(true);
