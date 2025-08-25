@@ -76,8 +76,8 @@ export default function TestStripePage() {
 
       // Read the response body once as text
       const responseText = await response.text();
-      console.log('Raw response:', responseText);
-      console.log('Response status:', response.status, response.statusText);
+      console.log('📥 Raw response status:', response.status, response.statusText);
+      console.log('📥 Raw response text:', responseText);
 
       // Check if response text is empty
       if (!responseText.trim()) {
@@ -88,14 +88,37 @@ export default function TestStripePage() {
       let data;
       try {
         data = JSON.parse(responseText);
+        console.log('📋 Parsed response data:', data);
       } catch (parseError) {
-        console.error('JSON Parse error:', parseError);
-        throw new Error(`Failed to parse JSON response: ${responseText.substring(0, 200)}...`);
+        console.error('❌ JSON Parse error:', parseError);
+        console.error('📄 Response text that failed to parse:', responseText);
+        throw new Error(`Failed to parse JSON response. Server returned: ${responseText.substring(0, 500)}`);
       }
 
       // Check if the request was successful AFTER parsing the response
       if (!response.ok) {
-        const errorMessage = data.error || data.details || data.message || `HTTP ${response.status}: ${response.statusText}`;
+        console.error('❌ HTTP Error Details:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData: data
+        });
+
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+        if (data.error) {
+          errorMessage = data.error;
+          if (data.details) {
+            errorMessage += ` - ${data.details}`;
+          }
+        }
+
+        // Special handling for common Stripe errors
+        if (response.status === 400) {
+          if (data.error?.includes('payment_method_configuration')) {
+            errorMessage = 'Invalid Stripe payment method configuration. Please check your Stripe settings.';
+          }
+        }
+
         throw new Error(errorMessage);
       }
 
