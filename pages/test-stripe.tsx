@@ -43,18 +43,28 @@ export default function TestStripePage() {
         body: JSON.stringify(testData),
       });
 
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
+      // Clone the response to read it multiple times if needed
+      const responseClone = response.clone();
 
       let data;
+      let responseText;
+
       try {
+        responseText = await response.text();
+        console.log('Raw response:', responseText);
+
+        if (!responseText.trim()) {
+          throw new Error('Empty response from server');
+        }
+
         data = JSON.parse(responseText);
       } catch (parseError) {
-        throw new Error(`Failed to parse response: ${responseText}`);
+        console.error('Parse error:', parseError);
+        throw new Error(`Failed to parse response: ${responseText || 'No response text'}`);
       }
 
-      if (!response.ok) {
-        throw new Error(data.error || data.details || `HTTP ${response.status}`);
+      if (!responseClone.ok) {
+        throw new Error(data.error || data.details || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       setResult(data);
