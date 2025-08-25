@@ -257,7 +257,6 @@ export default async function handler(
         tax: tax.toFixed(2),
         finalAmount: finalAmount.toFixed(2),
         calculatedAt: new Date().toISOString(),
-        venmo_capability: process.env.STRIPE_VENMO_CAPABILITY || "",
       },
     };
 
