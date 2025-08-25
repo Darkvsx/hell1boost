@@ -88,10 +88,11 @@ export function StripePaymentElement({
 
     try {
       // Validate form completion before confirming
-      const {error: submitError} = await elements.submit();
+      const { error: submitError } = await elements.submit();
       if (submitError) {
         console.error("Form validation error:", submitError);
-        const errorMsg = submitError.message || "Please complete all required payment fields.";
+        const errorMsg =
+          submitError.message || "Please complete all required payment fields.";
         setErrorMessage(errorMsg);
         onPaymentError(errorMsg);
         return;
@@ -115,7 +116,7 @@ export function StripePaymentElement({
           type: error.type,
           code: error.code,
           message: error.message,
-          declineCode: error.decline_code
+          declineCode: error.decline_code,
         });
 
         let errorMsg = "Payment failed.";
@@ -123,22 +124,29 @@ export function StripePaymentElement({
         // Provide specific error messages based on error type
         switch (error.type) {
           case "card_error":
-            errorMsg = error.message || "Your card was declined. Please try a different payment method.";
+            errorMsg =
+              error.message ||
+              "Your card was declined. Please try a different payment method.";
             break;
           case "validation_error":
-            errorMsg = error.message || "Please check your payment information and try again.";
+            errorMsg =
+              error.message ||
+              "Please check your payment information and try again.";
             break;
           case "api_connection_error":
-            errorMsg = "Network error. Please check your connection and try again.";
+            errorMsg =
+              "Network error. Please check your connection and try again.";
             break;
           case "api_error":
-            errorMsg = "Payment processing error. Please try again or contact support.";
+            errorMsg =
+              "Payment processing error. Please try again or contact support.";
             break;
           case "authentication_error":
             errorMsg = "Payment authentication failed. Please try again.";
             break;
           case "rate_limit_error":
-            errorMsg = "Too many payment attempts. Please wait a moment and try again.";
+            errorMsg =
+              "Too many payment attempts. Please wait a moment and try again.";
             break;
           default:
             errorMsg = error.message || "An unexpected payment error occurred.";
@@ -162,7 +170,7 @@ export function StripePaymentElement({
           console.log("Payment succeeded:", {
             id: paymentIntent.id,
             amount: paymentIntent.amount,
-            status: paymentIntent.status
+            status: paymentIntent.status,
           });
           onPaymentSuccess(paymentIntent);
           break;
@@ -174,19 +182,22 @@ export function StripePaymentElement({
           break;
 
         case "requires_payment_method":
-          const errorMsg = "Payment failed. Please try a different payment method.";
+          const errorMsg =
+            "Payment failed. Please try a different payment method.";
           setErrorMessage(errorMsg);
           onPaymentError(errorMsg);
           break;
 
         case "requires_confirmation":
-          const confirmErrorMsg = "Payment requires additional confirmation. Please try again.";
+          const confirmErrorMsg =
+            "Payment requires additional confirmation. Please try again.";
           setErrorMessage(confirmErrorMsg);
           onPaymentError(confirmErrorMsg);
           break;
 
         case "requires_action":
-          const actionErrorMsg = "Payment requires additional authentication. Please complete the verification and try again.";
+          const actionErrorMsg =
+            "Payment requires additional authentication. Please complete the verification and try again.";
           setErrorMessage(actionErrorMsg);
           onPaymentError(actionErrorMsg);
           break;
@@ -203,17 +214,16 @@ export function StripePaymentElement({
           onPaymentError(statusErrorMsg);
           break;
       }
-
     } catch (err: any) {
       console.error("Unexpected error during payment confirmation:", {
         error: err.message,
         name: err.name,
-        stack: err.stack
+        stack: err.stack,
       });
 
       let errorMsg = "An unexpected error occurred during payment.";
 
-      if (err.name === 'NetworkError') {
+      if (err.name === "NetworkError") {
         errorMsg = "Network error. Please check your connection and try again.";
       } else if (err.message) {
         errorMsg = err.message;

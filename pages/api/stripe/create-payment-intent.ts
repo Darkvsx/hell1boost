@@ -266,7 +266,8 @@ export default async function handler(
 
     // Create payment intent following Stripe documentation
     console.log("Creating Stripe PaymentIntent...");
-    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+    const paymentIntent =
+      await stripe.paymentIntents.create(paymentIntentParams);
 
     // Log successful creation for debugging
     console.log("Payment Intent created successfully:", {
@@ -284,7 +285,10 @@ export default async function handler(
       amount: finalAmount,
       currency: currency,
       // With automatic_payment_methods, Stripe determines available methods dynamically
-      supportedPaymentMethods: paymentIntent.payment_method_types || ['card', 'automatic'],
+      supportedPaymentMethods: paymentIntent.payment_method_types || [
+        "card",
+        "automatic",
+      ],
       automaticPaymentMethods: paymentIntent.automatic_payment_methods,
       breakdown: {
         servicesTotal: Number(servicesTotal.toFixed(2)),

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, XCircle, CreditCard } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, CheckCircle, XCircle, CreditCard } from "lucide-react";
 
 export default function TestStripePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [envCheck, setEnvCheck] = useState<any>(null);
 
   const checkEnvironment = () => {
@@ -15,47 +15,49 @@ export default function TestStripePage() {
       stripePublishableKey: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
       supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
       supabaseAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      stripeKeyFormat: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.startsWith('pk_'),
-      supabaseUrlFormat: process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('supabase.co'),
+      stripeKeyFormat:
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.startsWith("pk_"),
+      supabaseUrlFormat:
+        process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("supabase.co"),
     };
 
-    const allPassed = Object.values(checks).every(check => check === true);
+    const allPassed = Object.values(checks).every((check) => check === true);
 
     setEnvCheck({
       ...checks,
       allPassed,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   };
 
   const testPaymentIntentCreation = async () => {
     setIsLoading(true);
     setResult(null);
-    setError('');
+    setError("");
 
     try {
       // First, let's test server connectivity with a simple ping
-      console.log('🏓 Testing server connectivity...');
+      console.log("🏓 Testing server connectivity...");
       try {
-        const pingResponse = await fetch('/api/ping');
+        const pingResponse = await fetch("/api/ping");
         const pingText = await pingResponse.text();
-        console.log('🏓 Ping response:', pingResponse.status, pingText);
+        console.log("🏓 Ping response:", pingResponse.status, pingText);
       } catch (pingError) {
-        console.warn('⚠️ Ping failed:', pingError);
+        console.warn("⚠️ Ping failed:", pingError);
         // Continue anyway, as ping might not exist
       }
 
       // Test if our service ID exists in database
-      console.log('🔍 Validating test service in database...');
+      console.log("🔍 Validating test service in database...");
       const testServiceId = "5265efed-3187-4ede-943c-e01be26ef4f8"; // Level Boost (1-50) - $5.00
-      console.log('📋 Using service ID:', testServiceId);
+      console.log("📋 Using service ID:", testServiceId);
 
       const testData = {
         services: [
           {
             id: testServiceId,
-            quantity: 1
-          }
+            quantity: 1,
+          },
         ],
         referralCode: "", // No referral code for basic test
         referralDiscount: 0,
@@ -65,55 +67,63 @@ export default function TestStripePage() {
           userEmail: "test@example.com",
           userName: "Test User",
           timestamp: new Date().toISOString(),
-          testNote: "Automated test from test-stripe page"
-        }
+          testNote: "Automated test from test-stripe page",
+        },
       };
 
-      console.log('📋 Test will use service:', {
+      console.log("📋 Test will use service:", {
         id: testServiceId,
-        expectedPrice: '$5.00',
-        expectedWithTax: '$5.40' // 5.00 + 8% tax
+        expectedPrice: "$5.00",
+        expectedWithTax: "$5.40", // 5.00 + 8% tax
       });
 
-      console.log('🧪 Testing Stripe Payment Intent Creation');
-      console.log('📤 Request data:', testData);
-      console.log('🌐 Request URL:', '/api/stripe/create-payment-intent');
+      console.log("🧪 Testing Stripe Payment Intent Creation");
+      console.log("📤 Request data:", testData);
+      console.log("🌐 Request URL:", "/api/stripe/create-payment-intent");
 
-      const response = await fetch('/api/stripe/create-payment-intent', {
-        method: 'POST',
+      const response = await fetch("/api/stripe/create-payment-intent", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(testData),
       });
 
       // Read the response body once as text
       const responseText = await response.text();
-      console.log('📥 Raw response status:', response.status, response.statusText);
-      console.log('📥 Raw response text:', responseText);
+      console.log(
+        "📥 Raw response status:",
+        response.status,
+        response.statusText,
+      );
+      console.log("📥 Raw response text:", responseText);
 
       // Check if response text is empty
       if (!responseText.trim()) {
-        throw new Error(`Empty response from server. Status: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Empty response from server. Status: ${response.status} ${response.statusText}`,
+        );
       }
 
       // Parse the JSON response
       let data;
       try {
         data = JSON.parse(responseText);
-        console.log('📋 Parsed response data:', data);
+        console.log("📋 Parsed response data:", data);
       } catch (parseError) {
-        console.error('❌ JSON Parse error:', parseError);
-        console.error('📄 Response text that failed to parse:', responseText);
-        throw new Error(`Failed to parse JSON response. Server returned: ${responseText.substring(0, 500)}`);
+        console.error("❌ JSON Parse error:", parseError);
+        console.error("📄 Response text that failed to parse:", responseText);
+        throw new Error(
+          `Failed to parse JSON response. Server returned: ${responseText.substring(0, 500)}`,
+        );
       }
 
       // Check if the request was successful AFTER parsing the response
       if (!response.ok) {
-        console.error('❌ HTTP Error Details:', {
+        console.error("❌ HTTP Error Details:", {
           status: response.status,
           statusText: response.statusText,
-          errorData: data
+          errorData: data,
         });
 
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
@@ -127,8 +137,9 @@ export default function TestStripePage() {
 
         // Special handling for common Stripe errors
         if (response.status === 400) {
-          if (data.error?.includes('payment_method_configuration')) {
-            errorMessage = 'Invalid Stripe payment method configuration. Please check your Stripe settings.';
+          if (data.error?.includes("payment_method_configuration")) {
+            errorMessage =
+              "Invalid Stripe payment method configuration. Please check your Stripe settings.";
           }
         }
 
@@ -136,29 +147,28 @@ export default function TestStripePage() {
       }
 
       setResult(data);
-      console.log('✅ SUCCESS: Payment intent created successfully');
-      console.log('📋 Payment Intent Details:', {
+      console.log("✅ SUCCESS: Payment intent created successfully");
+      console.log("📋 Payment Intent Details:", {
         id: data.paymentIntentId,
         amount: data.amount,
         currency: data.currency,
-        clientSecretPresent: !!data.clientSecret
+        clientSecretPresent: !!data.clientSecret,
       });
-
     } catch (err: any) {
-      console.error('❌ ERROR: Payment intent creation failed');
-      console.error('🔍 Error details:', {
+      console.error("❌ ERROR: Payment intent creation failed");
+      console.error("🔍 Error details:", {
         name: err.name,
         message: err.message,
-        stack: err.stack
+        stack: err.stack,
       });
 
-      let errorMessage = 'Unknown error occurred';
+      let errorMessage = "Unknown error occurred";
 
       if (err.message) {
         errorMessage = err.message;
-      } else if (err.name === 'TypeError') {
+      } else if (err.name === "TypeError") {
         errorMessage = `Network or parsing error: ${err.toString()}`;
-      } else if (err.name === 'SyntaxError') {
+      } else if (err.name === "SyntaxError") {
         errorMessage = `Response parsing error: ${err.toString()}`;
       }
 
@@ -217,14 +227,16 @@ export default function TestStripePage() {
                     Testing Payment Intent...
                   </>
                 ) : (
-                  'Test Payment Intent Creation'
+                  "Test Payment Intent Creation"
                 )}
               </Button>
             </div>
 
             {/* Environment Check Results */}
             {envCheck && (
-              <Card className={`border ${envCheck.allPassed ? 'border-green-200 bg-green-50 dark:bg-green-950/20' : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20'}`}>
+              <Card
+                className={`border ${envCheck.allPassed ? "border-green-200 bg-green-50 dark:bg-green-950/20" : "border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20"}`}
+              >
                 <CardContent className="p-4">
                   <div className="flex items-center mb-3">
                     {envCheck.allPassed ? (
@@ -232,8 +244,11 @@ export default function TestStripePage() {
                     ) : (
                       <XCircle className="w-5 h-5 text-yellow-600 mr-2" />
                     )}
-                    <h3 className={`font-semibold ${envCheck.allPassed ? 'text-green-800 dark:text-green-200' : 'text-yellow-800 dark:text-yellow-200'}`}>
-                      Environment Check {envCheck.allPassed ? 'Passed' : 'Issues Found'}
+                    <h3
+                      className={`font-semibold ${envCheck.allPassed ? "text-green-800 dark:text-green-200" : "text-yellow-800 dark:text-yellow-200"}`}
+                    >
+                      Environment Check{" "}
+                      {envCheck.allPassed ? "Passed" : "Issues Found"}
                     </h3>
                   </div>
 
@@ -242,13 +257,15 @@ export default function TestStripePage() {
                       <h4 className="font-medium mb-2">Required Variables:</h4>
                       <ul className="space-y-1">
                         <li className="flex items-center">
-                          {envCheck.stripePublishableKey ? '✅' : '❌'} Stripe Publishable Key
+                          {envCheck.stripePublishableKey ? "✅" : "❌"} Stripe
+                          Publishable Key
                         </li>
                         <li className="flex items-center">
-                          {envCheck.supabaseUrl ? '✅' : '❌'} Supabase URL
+                          {envCheck.supabaseUrl ? "✅" : "❌"} Supabase URL
                         </li>
                         <li className="flex items-center">
-                          {envCheck.supabaseAnonKey ? '✅' : '❌'} Supabase Anon Key
+                          {envCheck.supabaseAnonKey ? "✅" : "❌"} Supabase Anon
+                          Key
                         </li>
                       </ul>
                     </div>
@@ -256,10 +273,12 @@ export default function TestStripePage() {
                       <h4 className="font-medium mb-2">Format Validation:</h4>
                       <ul className="space-y-1">
                         <li className="flex items-center">
-                          {envCheck.stripeKeyFormat ? '✅' : '❌'} Stripe Key Format (pk_)
+                          {envCheck.stripeKeyFormat ? "✅" : "❌"} Stripe Key
+                          Format (pk_)
                         </li>
                         <li className="flex items-center">
-                          {envCheck.supabaseUrlFormat ? '✅' : '❌'} Supabase URL Format
+                          {envCheck.supabaseUrlFormat ? "✅" : "❌"} Supabase
+                          URL Format
                         </li>
                       </ul>
                     </div>
@@ -282,48 +301,70 @@ export default function TestStripePage() {
                       Payment Intent Created Successfully!
                     </h3>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <h4 className="font-medium mb-2">Payment Details:</h4>
                       <ul className="space-y-1 text-sm">
                         <li>
-                          <strong>Payment Intent ID:</strong>{' '}
-                          <Badge variant="outline">{result.paymentIntentId}</Badge>
-                        </li>
-                        <li><strong>Amount:</strong> ${result.amount}</li>
-                        <li><strong>Currency:</strong> {result.currency?.toUpperCase()}</li>
-                        <li>
-                          <strong>Client Secret:</strong>{' '}
+                          <strong>Payment Intent ID:</strong>{" "}
                           <Badge variant="outline">
-                            {result.clientSecret ? 'Present ✓' : 'Missing ✗'}
+                            {result.paymentIntentId}
+                          </Badge>
+                        </li>
+                        <li>
+                          <strong>Amount:</strong> ${result.amount}
+                        </li>
+                        <li>
+                          <strong>Currency:</strong>{" "}
+                          {result.currency?.toUpperCase()}
+                        </li>
+                        <li>
+                          <strong>Client Secret:</strong>{" "}
+                          <Badge variant="outline">
+                            {result.clientSecret ? "Present ✓" : "Missing ✗"}
                           </Badge>
                         </li>
                       </ul>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-medium mb-2">Payment Methods:</h4>
                       <div className="space-y-2">
                         <div className="flex flex-wrap gap-1">
-                          {result.supportedPaymentMethods?.map((method: string) => (
-                            <Badge key={method} variant="secondary" className="text-xs">
-                              {method.replace('_', ' ')}
-                            </Badge>
-                          ))}
+                          {result.supportedPaymentMethods?.map(
+                            (method: string) => (
+                              <Badge
+                                key={method}
+                                variant="secondary"
+                                className="text-xs"
+                              >
+                                {method.replace("_", " ")}
+                              </Badge>
+                            ),
+                          )}
                         </div>
                         {result.automaticPaymentMethods && (
                           <div className="text-xs text-muted-foreground">
-                            <strong>Automatic Payment Methods:</strong> {result.automaticPaymentMethods.enabled ? 'Enabled' : 'Disabled'}
+                            <strong>Automatic Payment Methods:</strong>{" "}
+                            {result.automaticPaymentMethods.enabled
+                              ? "Enabled"
+                              : "Disabled"}
                             {result.automaticPaymentMethods.allow_redirects && (
-                              <span> • Redirects: {result.automaticPaymentMethods.allow_redirects}</span>
+                              <span>
+                                {" "}
+                                • Redirects:{" "}
+                                {result.automaticPaymentMethods.allow_redirects}
+                              </span>
                             )}
                           </div>
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-2">
-                        {result.supportedPaymentMethods?.length || 0} base payment methods
-                        {result.automaticPaymentMethods?.enabled && ' + automatic detection'}
+                        {result.supportedPaymentMethods?.length || 0} base
+                        payment methods
+                        {result.automaticPaymentMethods?.enabled &&
+                          " + automatic detection"}
                       </p>
                     </div>
                   </div>
@@ -377,11 +418,27 @@ export default function TestStripePage() {
                     <div className="text-xs text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20 p-3 rounded">
                       <strong>Common Issues & Solutions:</strong>
                       <ul className="list-disc list-inside mt-2 space-y-1">
-                        <li><strong>400 Error:</strong> Usually indicates invalid Stripe configuration</li>
-                        <li><strong>Invalid payment_method_configuration:</strong> Venmo/payment config doesn't exist in your Stripe account</li>
-                        <li><strong>Environment Variables:</strong> Check Stripe keys are valid for your account</li>
-                        <li><strong>Database Connection:</strong> Ensure Supabase credentials are correct</li>
-                        <li><strong>Service IDs:</strong> Make sure test service exists in database</li>
+                        <li>
+                          <strong>400 Error:</strong> Usually indicates invalid
+                          Stripe configuration
+                        </li>
+                        <li>
+                          <strong>Invalid payment_method_configuration:</strong>{" "}
+                          Venmo/payment config doesn't exist in your Stripe
+                          account
+                        </li>
+                        <li>
+                          <strong>Environment Variables:</strong> Check Stripe
+                          keys are valid for your account
+                        </li>
+                        <li>
+                          <strong>Database Connection:</strong> Ensure Supabase
+                          credentials are correct
+                        </li>
+                        <li>
+                          <strong>Service IDs:</strong> Make sure test service
+                          exists in database
+                        </li>
                       </ul>
                     </div>
 
@@ -390,8 +447,12 @@ export default function TestStripePage() {
                       <ol className="list-decimal list-inside mt-1 space-y-1">
                         <li>Open browser DevTools → Console tab</li>
                         <li>Look for detailed error logs above</li>
-                        <li>Check the Network tab for the exact API response</li>
-                        <li>Verify all environment variables are set correctly</li>
+                        <li>
+                          Check the Network tab for the exact API response
+                        </li>
+                        <li>
+                          Verify all environment variables are set correctly
+                        </li>
                       </ol>
                     </div>
                   </div>
@@ -411,9 +472,17 @@ export default function TestStripePage() {
                 <h4 className="font-medium mb-2">Stripe Configuration:</h4>
                 <ul className="space-y-1 text-sm">
                   <li>
-                    <strong>Publishable Key:</strong>{' '}
-                    <Badge variant={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'default' : 'destructive'}>
-                      {process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'Set ✓' : 'Missing ✗'}
+                    <strong>Publishable Key:</strong>{" "}
+                    <Badge
+                      variant={
+                        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+                          ? "default"
+                          : "destructive"
+                      }
+                    >
+                      {process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+                        ? "Set ✓"
+                        : "Missing ✗"}
                     </Badge>
                   </li>
                 </ul>
@@ -422,15 +491,31 @@ export default function TestStripePage() {
                 <h4 className="font-medium mb-2">Supabase Configuration:</h4>
                 <ul className="space-y-1 text-sm">
                   <li>
-                    <strong>URL:</strong>{' '}
-                    <Badge variant={process.env.NEXT_PUBLIC_SUPABASE_URL ? 'default' : 'destructive'}>
-                      {process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set ✓' : 'Missing ✗'}
+                    <strong>URL:</strong>{" "}
+                    <Badge
+                      variant={
+                        process.env.NEXT_PUBLIC_SUPABASE_URL
+                          ? "default"
+                          : "destructive"
+                      }
+                    >
+                      {process.env.NEXT_PUBLIC_SUPABASE_URL
+                        ? "Set ✓"
+                        : "Missing ✗"}
                     </Badge>
                   </li>
                   <li>
-                    <strong>Anon Key:</strong>{' '}
-                    <Badge variant={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'default' : 'destructive'}>
-                      {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set ✓' : 'Missing ✗'}
+                    <strong>Anon Key:</strong>{" "}
+                    <Badge
+                      variant={
+                        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+                          ? "default"
+                          : "destructive"
+                      }
+                    >
+                      {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+                        ? "Set ✓"
+                        : "Missing ✗"}
                     </Badge>
                   </li>
                 </ul>

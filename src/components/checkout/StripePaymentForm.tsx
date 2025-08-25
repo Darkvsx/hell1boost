@@ -75,14 +75,14 @@ export function StripePaymentForm({
         total,
         disabled,
         cartItemsLength: cartItems.length,
-        isInitializing: initializingRef.current
+        isInitializing: initializingRef.current,
       });
 
       // Prevent multiple concurrent initializations
       if (initializingRef.current || disabled) {
         console.log("🛑 Skipping initialization:", {
           alreadyInitializing: initializingRef.current,
-          disabled
+          disabled,
         });
         setIsLoading(false);
         return;
@@ -143,10 +143,13 @@ export function StripePaymentForm({
           total,
           referralDiscount,
           creditsUsed,
-          currency: "usd"
+          currency: "usd",
         });
 
-        console.log("📋 Full request body:", JSON.stringify(requestBody, null, 2));
+        console.log(
+          "📋 Full request body:",
+          JSON.stringify(requestBody, null, 2),
+        );
 
         // Create payment intent with timeout
         const controller = new AbortController();
@@ -165,12 +168,18 @@ export function StripePaymentForm({
 
         // Read response body once and handle errors properly
         const responseText = await response.text();
-        console.log("Payment API Response Status:", response.status, response.statusText);
+        console.log(
+          "Payment API Response Status:",
+          response.status,
+          response.statusText,
+        );
         console.log("Payment API Response Body:", responseText);
 
         // Check if response text is empty
         if (!responseText.trim()) {
-          throw new Error(`Empty response from payment server. Status: ${response.status} ${response.statusText}`);
+          throw new Error(
+            `Empty response from payment server. Status: ${response.status} ${response.statusText}`,
+          );
         }
 
         // Parse the JSON response
@@ -204,9 +213,10 @@ export function StripePaymentForm({
 
           // Handle specific error types
           if (response.status === 400) {
-            if (data.error?.includes('payment_method_configuration')) {
-              errorMessage = 'Payment configuration error. Please contact support.';
-            } else if (data.error?.includes('Invalid')) {
+            if (data.error?.includes("payment_method_configuration")) {
+              errorMessage =
+                "Payment configuration error. Please contact support.";
+            } else if (data.error?.includes("Invalid")) {
               errorMessage = data.error;
             }
           }
@@ -228,7 +238,7 @@ export function StripePaymentForm({
           amount: data.amount,
           currency: data.currency,
           clientSecretPresent: !!data.clientSecret,
-          supportedMethodsCount: data.supportedPaymentMethods?.length || 0
+          supportedMethodsCount: data.supportedPaymentMethods?.length || 0,
         });
 
         // Validate critical response data
@@ -254,10 +264,10 @@ export function StripePaymentForm({
         });
       } catch (error: any) {
         console.error("❌ Error initializing payment:", {
-          name: error?.name || 'Unknown',
-          message: error?.message || 'No message',
-          stack: error?.stack || 'No stack trace',
-          toString: error?.toString?.() || String(error)
+          name: error?.name || "Unknown",
+          message: error?.message || "No message",
+          stack: error?.stack || "No stack trace",
+          toString: error?.toString?.() || String(error),
         });
 
         let errorMessage = "Failed to initialize payment";
@@ -265,16 +275,19 @@ export function StripePaymentForm({
         if (error?.name === "AbortError") {
           errorMessage =
             "Payment initialization timed out. Please check your connection and try again.";
-        } else if (error?.name === "TypeError" && error?.message?.includes("fetch")) {
+        } else if (
+          error?.name === "TypeError" &&
+          error?.message?.includes("fetch")
+        ) {
           errorMessage =
             "Network error. Please check your connection and try again.";
         } else if (error?.message) {
           errorMessage = error.message;
-        } else if (typeof error === 'string') {
+        } else if (typeof error === "string") {
           errorMessage = error;
         } else {
           // Fallback for unexpected error types
-          errorMessage = `Unexpected error: ${error?.toString?.() || 'Unknown error'}`;
+          errorMessage = `Unexpected error: ${error?.toString?.() || "Unknown error"}`;
         }
 
         console.error("🔧 Final error message:", errorMessage);
@@ -358,7 +371,7 @@ export function StripePaymentForm({
             <div className="mt-4">
               <Button
                 onClick={() => {
-                  setInitError('');
+                  setInitError("");
                   setIsLoading(true);
                   initializingRef.current = false;
                   // Trigger re-initialization
