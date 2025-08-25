@@ -286,16 +286,16 @@ export function StripePaymentElement({
                 },
                 fields: {
                   billingDetails: {
-                    name: "auto",
-                    email: "auto",
-                    phone: "never",
+                    name: "auto", // Collect customer name
+                    email: "auto", // Collect email for receipts and communication
+                    phone: "auto", // Collect phone for chargeback protection and order support
                     address: {
-                      line1: "never",
-                      line2: "never",
-                      city: "never",
-                      state: "never",
-                      postalCode: "never",
-                      country: "never",
+                      line1: "auto", // Required for chargeback protection
+                      line2: "auto", // Optional but useful for complete address
+                      city: "auto", // Required for chargeback protection
+                      state: "auto", // Required for chargeback protection
+                      postalCode: "auto", // Required for chargeback protection and tax calculation
+                      country: "auto", // Required for chargeback protection
                     },
                   },
                 },
