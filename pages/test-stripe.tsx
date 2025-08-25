@@ -34,6 +34,16 @@ export default function TestStripePage() {
     setError('');
 
     try {
+      // First, let's test server connectivity with a simple ping
+      console.log('🏓 Testing server connectivity...');
+      try {
+        const pingResponse = await fetch('/api/ping');
+        const pingText = await pingResponse.text();
+        console.log('🏓 Ping response:', pingResponse.status, pingText);
+      } catch (pingError) {
+        console.warn('⚠️ Ping failed:', pingError);
+        // Continue anyway, as ping might not exist
+      }
       const testData = {
         services: [
           {
