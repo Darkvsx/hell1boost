@@ -154,15 +154,26 @@ export default function TestStripePage() {
                     
                     <div>
                       <h4 className="font-medium mb-2">Payment Methods:</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {result.supportedPaymentMethods?.map((method: string) => (
-                          <Badge key={method} variant="secondary" className="text-xs">
-                            {method.replace('_', ' ')}
-                          </Badge>
-                        ))}
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap gap-1">
+                          {result.supportedPaymentMethods?.map((method: string) => (
+                            <Badge key={method} variant="secondary" className="text-xs">
+                              {method.replace('_', ' ')}
+                            </Badge>
+                          ))}
+                        </div>
+                        {result.automaticPaymentMethods && (
+                          <div className="text-xs text-muted-foreground">
+                            <strong>Automatic Payment Methods:</strong> {result.automaticPaymentMethods.enabled ? 'Enabled' : 'Disabled'}
+                            {result.automaticPaymentMethods.allow_redirects && (
+                              <span> • Redirects: {result.automaticPaymentMethods.allow_redirects}</span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-2">
-                        {result.supportedPaymentMethods?.length || 0} payment methods available
+                        {result.supportedPaymentMethods?.length || 0} base payment methods
+                        {result.automaticPaymentMethods?.enabled && ' + automatic detection'}
                       </p>
                     </div>
                   </div>
