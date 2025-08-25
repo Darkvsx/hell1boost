@@ -149,29 +149,54 @@ export function StripePaymentForm({
 
         clearTimeout(timeoutId);
 
-        // Parse response with enhanced error handling
+        // Read response body once and handle errors properly
+        const responseText = await response.text();
+        console.log("Payment API Response Status:", response.status, response.statusText);
+        console.log("Payment API Response Body:", responseText);
+
+        // Check if response text is empty
+        if (!responseText.trim()) {
+          throw new Error(`Empty response from payment server. Status: ${response.status} ${response.statusText}`);
+        }
+
+        // Parse the JSON response
         let data;
         try {
-          const responseText = await response.text();
-          if (!responseText.trim()) {
-            throw new Error("Empty response from payment server");
-          }
           data = JSON.parse(responseText);
         } catch (parseError) {
           console.error("Failed to parse payment response:", parseError);
+          console.error("Raw response that failed to parse:", responseText);
           throw new Error(
-            "Invalid response format from payment server. Please try again or contact support.",
+            `Failed to parse payment server response. Server returned: ${responseText.substring(0, 200)}...`,
           );
         }
 
+        // Check if request was successful AFTER parsing
         if (!response.ok) {
-          const errorMessage =
-            data.error || data.details || `Server error: ${response.status}`;
           console.error("Payment intent creation failed:", {
             status: response.status,
-            error: data.error,
-            details: data.details,
+            statusText: response.statusText,
+            errorData: data,
           });
+
+          let errorMessage = `Payment server error (${response.status}): ${response.statusText}`;
+
+          if (data.error) {
+            errorMessage = data.error;
+            if (data.details) {
+              errorMessage += ` - ${data.details}`;
+            }
+          }
+
+          // Handle specific error types
+          if (response.status === 400) {
+            if (data.error?.includes('payment_method_configuration')) {
+              errorMessage = 'Payment configuration error. Please contact support.';
+            } else if (data.error?.includes('Invalid')) {
+              errorMessage = data.error;
+            }
+          }
+
           throw new Error(errorMessage);
         }
 
