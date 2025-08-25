@@ -49,23 +49,32 @@ export default function TestStripePage() {
       console.log('🔍 Validating test service in database...');
       const testServiceId = "5265efed-3187-4ede-943c-e01be26ef4f8";
       console.log('📋 Using service ID:', testServiceId);
+      const testServiceId = "5265efed-3187-4ede-943c-e01be26ef4f8"; // Level Boost (1-50) - $5.00
+
       const testData = {
         services: [
           {
-            id: "5265efed-3187-4ede-943c-e01be26ef4f8", // Level Boost (1-50)
+            id: testServiceId,
             quantity: 1
           }
         ],
-        referralCode: "",
+        referralCode: "", // No referral code for basic test
         referralDiscount: 0,
         creditsUsed: 0,
         currency: "usd",
         metadata: {
           userEmail: "test@example.com",
           userName: "Test User",
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          testNote: "Automated test from test-stripe page"
         }
       };
+
+      console.log('📋 Test will use service:', {
+        id: testServiceId,
+        expectedPrice: '$5.00',
+        expectedWithTax: '$5.40' // 5.00 + 8% tax
+      });
 
       console.log('🧪 Testing Stripe Payment Intent Creation');
       console.log('📤 Request data:', testData);
