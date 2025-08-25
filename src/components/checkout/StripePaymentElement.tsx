@@ -98,15 +98,12 @@ export function StripePaymentElement({
       }
 
       // Confirm the payment with enhanced error handling
+      // Note: billing_details are now collected automatically through the PaymentElement
       const confirmResult = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/order/success`,
-          payment_method_data: {
-            billing_details: {
-              name: "HellDivers 2 Boosting Customer",
-            },
-          },
+          // No need to manually specify billing_details since PaymentElement collects them
         },
         redirect: "if_required",
       });
