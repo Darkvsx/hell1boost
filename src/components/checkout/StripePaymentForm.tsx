@@ -354,6 +354,23 @@ export function StripePaymentForm({
               Please add items to your cart before proceeding to payment.
             </p>
           )}
+          {initError.includes("response") && (
+            <div className="mt-4">
+              <Button
+                onClick={() => {
+                  setInitError('');
+                  setIsLoading(true);
+                  initializingRef.current = false;
+                  // Trigger re-initialization
+                  setTimeout(() => setIsLoading(false), 100);
+                }}
+                variant="outline"
+                size="sm"
+              >
+                Retry Payment Setup
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     );
