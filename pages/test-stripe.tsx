@@ -52,7 +52,9 @@ export default function TestStripePage() {
         }
       };
 
-      console.log('Testing with data:', testData);
+      console.log('🧪 Testing Stripe Payment Intent Creation');
+      console.log('📤 Request data:', testData);
+      console.log('🌐 Request URL:', '/api/stripe/create-payment-intent');
 
       const response = await fetch('/api/stripe/create-payment-intent', {
         method: 'POST',
