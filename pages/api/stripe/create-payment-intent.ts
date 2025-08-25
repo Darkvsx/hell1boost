@@ -276,8 +276,8 @@ export default async function handler(
       id: paymentIntent.id,
       amount: finalAmount,
       currency: currency,
-      payment_method_types: paymentIntent.payment_method_types,
       automatic_payment_methods: paymentIntent.automatic_payment_methods,
+      payment_method_types: paymentIntent.payment_method_types,
     });
 
     // Return successful response
@@ -286,7 +286,9 @@ export default async function handler(
       paymentIntentId: paymentIntent.id,
       amount: finalAmount,
       currency: currency,
-      supportedPaymentMethods: paymentIntent.payment_method_types,
+      // With automatic_payment_methods, Stripe determines available methods dynamically
+      supportedPaymentMethods: paymentIntent.payment_method_types || ['card', 'automatic'],
+      automaticPaymentMethods: paymentIntent.automatic_payment_methods,
       breakdown: {
         servicesTotal: Number(servicesTotal.toFixed(2)),
         customOrderTotal: Number(customOrderTotal.toFixed(2)),
