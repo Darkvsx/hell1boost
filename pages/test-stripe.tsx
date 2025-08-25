@@ -356,18 +356,30 @@ export default function TestStripePage() {
                       Payment Intent Creation Failed
                     </h3>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-red-700 dark:text-red-300 text-sm">
+                  <div className="space-y-3">
+                    <p className="text-red-700 dark:text-red-300 text-sm font-medium">
                       {error}
                     </p>
-                    <div className="text-xs text-red-600 dark:text-red-400">
-                      <strong>Troubleshooting:</strong>
-                      <ul className="list-disc list-inside mt-1 space-y-1">
-                        <li>Check that all environment variables are set correctly</li>
-                        <li>Verify Stripe secret key is valid for your account</li>
-                        <li>Ensure Supabase connection is working</li>
-                        <li>Check browser console for additional error details</li>
+
+                    <div className="text-xs text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20 p-3 rounded">
+                      <strong>Common Issues & Solutions:</strong>
+                      <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li><strong>400 Error:</strong> Usually indicates invalid Stripe configuration</li>
+                        <li><strong>Invalid payment_method_configuration:</strong> Venmo/payment config doesn't exist in your Stripe account</li>
+                        <li><strong>Environment Variables:</strong> Check Stripe keys are valid for your account</li>
+                        <li><strong>Database Connection:</strong> Ensure Supabase credentials are correct</li>
+                        <li><strong>Service IDs:</strong> Make sure test service exists in database</li>
                       </ul>
+                    </div>
+
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                      <strong>🔍 Debugging Steps:</strong>
+                      <ol className="list-decimal list-inside mt-1 space-y-1">
+                        <li>Open browser DevTools → Console tab</li>
+                        <li>Look for detailed error logs above</li>
+                        <li>Check the Network tab for the exact API response</li>
+                        <li>Verify all environment variables are set correctly</li>
+                      </ol>
                     </div>
                   </div>
                 </CardContent>
