@@ -87,20 +87,6 @@ export function StripePaymentElement({
     console.log(`Attempting payment confirmation for $${total.toFixed(2)}`);
 
     try {
-<<<<<<< HEAD
-      // Validate form before submitting
-      const { error: submitError } = await elements.submit();
-      if (submitError) {
-        setErrorMessage(
-          submitError.message || "Please complete all required fields.",
-        );
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Confirm the payment with enhanced configuration
-      const { error, paymentIntent } = await stripe.confirmPayment({
-=======
       // Validate form completion before confirming
       const {error: submitError} = await elements.submit();
       if (submitError) {
@@ -113,7 +99,6 @@ export function StripePaymentElement({
 
       // Confirm the payment with enhanced error handling
       const confirmResult = await stripe.confirmPayment({
->>>>>>> ai_main_3cdc03bd478c
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/order/success`,
@@ -124,38 +109,11 @@ export function StripePaymentElement({
           },
         },
         redirect: "if_required",
-        confirmParams: {
-          return_url: window.location.origin + "/checkout/success",
-        },
       });
 
       const { error, paymentIntent } = confirmResult;
 
       if (error) {
-<<<<<<< HEAD
-        console.error("Payment error:", error);
-        let errorMsg = "An unexpected error occurred.";
-
-        // Enhanced error messages based on error types
-        switch (error.type) {
-          case "card_error":
-            errorMsg =
-              error.message ||
-              "Your card was declined. Please try a different payment method.";
-            break;
-          case "validation_error":
-            errorMsg =
-              error.message ||
-              "Please check your payment information and try again.";
-            break;
-          case "api_connection_error":
-            errorMsg =
-              "Network error. Please check your connection and try again.";
-            break;
-          case "api_error":
-            errorMsg =
-              "Payment service temporarily unavailable. Please try again in a moment.";
-=======
         console.error("Payment confirmation error:", {
           type: error.type,
           code: error.code,
@@ -178,52 +136,20 @@ export function StripePaymentElement({
             break;
           case "api_error":
             errorMsg = "Payment processing error. Please try again or contact support.";
->>>>>>> ai_main_3cdc03bd478c
             break;
           case "authentication_error":
             errorMsg = "Payment authentication failed. Please try again.";
             break;
           case "rate_limit_error":
-<<<<<<< HEAD
-            errorMsg =
-              "Too many payment attempts. Please wait a moment and try again.";
-            break;
-          default:
-            errorMsg = error.message || errorMsg;
-=======
             errorMsg = "Too many payment attempts. Please wait a moment and try again.";
             break;
           default:
             errorMsg = error.message || "An unexpected payment error occurred.";
->>>>>>> ai_main_3cdc03bd478c
         }
 
         setErrorMessage(errorMsg);
         onPaymentError(errorMsg);
-<<<<<<< HEAD
-      } else if (paymentIntent) {
-        if (paymentIntent.status === "succeeded") {
-          console.log("Payment succeeded:", paymentIntent);
-          onPaymentSuccess(paymentIntent);
-        } else if (paymentIntent.status === "processing") {
-          console.log("Payment processing:", paymentIntent);
-          // For some payment methods, the payment might be processing
-          onPaymentSuccess(paymentIntent);
-        } else if (paymentIntent.status === "requires_payment_method") {
-          setErrorMessage(
-            "Payment was not successful. Please try a different payment method.",
-          );
-          onPaymentError(
-            "Payment was not successful. Please try a different payment method.",
-          );
-        } else {
-          const errorMsg = `Payment status: ${paymentIntent.status}. Please contact support if this persists.`;
-          setErrorMessage(errorMsg);
-          onPaymentError(errorMsg);
-        }
-=======
         return;
->>>>>>> ai_main_3cdc03bd478c
       }
 
       // Validate payment intent status
