@@ -90,11 +90,33 @@ export default function TestStripePage() {
       }
 
       setResult(data);
-      console.log('✅ SUCCESS: Payment intent created:', data);
+      console.log('✅ SUCCESS: Payment intent created successfully');
+      console.log('📋 Payment Intent Details:', {
+        id: data.paymentIntentId,
+        amount: data.amount,
+        currency: data.currency,
+        clientSecretPresent: !!data.clientSecret
+      });
 
     } catch (err: any) {
-      console.error('❌ ERROR:', err);
-      setError(err.message || 'Unknown error occurred');
+      console.error('❌ ERROR: Payment intent creation failed');
+      console.error('🔍 Error details:', {
+        name: err.name,
+        message: err.message,
+        stack: err.stack
+      });
+
+      let errorMessage = 'Unknown error occurred';
+
+      if (err.message) {
+        errorMessage = err.message;
+      } else if (err.name === 'TypeError') {
+        errorMessage = `Network or parsing error: ${err.toString()}`;
+      } else if (err.name === 'SyntaxError') {
+        errorMessage = `Response parsing error: ${err.toString()}`;
+      }
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
