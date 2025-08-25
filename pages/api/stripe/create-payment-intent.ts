@@ -3,15 +3,10 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-<<<<<<< HEAD
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-=======
 // Initialize Stripe according to official documentation
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2024-11-20.acacia", // Latest stable version
   typescript: true,
->>>>>>> ai_main_3cdc03bd478c
 });
 
 // Initialize Supabase
@@ -219,8 +214,18 @@ export default async function handler(
       });
     }
 
-<<<<<<< HEAD
-    // Configure payment methods - enable all available methods
+    // Log payment calculation for debugging
+    console.log("Payment calculation:", {
+      servicesTotal,
+      customOrderTotal,
+      subtotal,
+      validatedReferralDiscount,
+      tax,
+      validatedCreditsUsed,
+      finalAmount,
+    });
+
+    // Configure payment methods - enable all available methods including enhanced payment capabilities
     const paymentMethodTypes = [
       "card",
       "us_bank_account",
@@ -249,40 +254,10 @@ export default async function handler(
     const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
       amount: Math.round(finalAmount * 100), // Convert to cents
       currency: currency.toLowerCase(),
-      metadata: {
-        ...metadata,
-        servicesTotal: servicesTotal.toString(),
-        customOrderTotal: customOrderTotal.toString(),
-        subtotal: subtotal.toString(),
-        referralDiscount: referralDiscount.toString(),
-        creditsUsed: creditsUsed.toString(),
-        tax: tax.toString(),
-        finalAmount: finalAmount.toString(),
-        venmo_capability: process.env.STRIPE_VENMO_CAPABILITY || "",
-      },
-=======
-    // Log payment calculation for debugging
-    console.log("Payment calculation:", {
-      servicesTotal,
-      customOrderTotal,
-      subtotal,
-      validatedReferralDiscount,
-      tax,
-      validatedCreditsUsed,
-      finalAmount,
-    });
-
-    // Create payment intent following Stripe documentation
-    console.log("Creating Stripe PaymentIntent...");
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(finalAmount * 100), // Amount in cents
-      currency: currency,
->>>>>>> ai_main_3cdc03bd478c
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: "always",
       },
-<<<<<<< HEAD
       payment_method_types: paymentMethodTypes,
       setup_future_usage: "off_session", // Allow saving payment methods for future use
       receipt_email: metadata.userEmail,
@@ -296,25 +271,6 @@ export default async function handler(
           country: "US",
         },
       },
-    };
-
-    // Add Venmo-specific configuration if capability is available
-    if (process.env.STRIPE_VENMO_CAPABILITY) {
-      paymentIntentParams.payment_method_configuration =
-        process.env.STRIPE_VENMO_CAPABILITY;
-    }
-
-    const paymentIntent =
-      await stripe.paymentIntents.create(paymentIntentParams);
-
-    // Log successful creation for debugging
-    console.log("Payment Intent created successfully:", {
-      id: paymentIntent.id,
-      amount: finalAmount,
-      currency: currency,
-      payment_method_types: paymentIntent.payment_method_types,
-      automatic_payment_methods: paymentIntent.automatic_payment_methods,
-=======
       metadata: {
         ...metadata,
         servicesTotal: servicesTotal.toFixed(2),
@@ -326,12 +282,28 @@ export default async function handler(
         tax: tax.toFixed(2),
         finalAmount: finalAmount.toFixed(2),
         calculatedAt: new Date().toISOString(),
+        venmo_capability: process.env.STRIPE_VENMO_CAPABILITY || "",
       },
->>>>>>> ai_main_3cdc03bd478c
-    });
+    };
 
-    // Log successful creation
-    console.log("PaymentIntent created successfully:", paymentIntent.id);
+    // Add Venmo-specific configuration if capability is available
+    if (process.env.STRIPE_VENMO_CAPABILITY) {
+      paymentIntentParams.payment_method_configuration =
+        process.env.STRIPE_VENMO_CAPABILITY;
+    }
+
+    // Create payment intent following Stripe documentation
+    console.log("Creating Stripe PaymentIntent...");
+    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+
+    // Log successful creation for debugging
+    console.log("Payment Intent created successfully:", {
+      id: paymentIntent.id,
+      amount: finalAmount,
+      currency: currency,
+      payment_method_types: paymentIntent.payment_method_types,
+      automatic_payment_methods: paymentIntent.automatic_payment_methods,
+    });
 
     // Return successful response
     return res.status(200).json({
