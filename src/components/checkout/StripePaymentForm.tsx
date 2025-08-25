@@ -126,13 +126,16 @@ export function StripePaymentForm({
           },
         };
 
-        console.log("Creating payment intent with data:", {
+        console.log("🚀 Creating payment intent with data:", {
           servicesCount: services.length,
           hasCustomOrder: !!customOrderData,
           total,
           referralDiscount,
           creditsUsed,
+          currency: "usd"
         });
+
+        console.log("📋 Full request body:", JSON.stringify(requestBody, null, 2));
 
         // Create payment intent with timeout
         const controller = new AbortController();
