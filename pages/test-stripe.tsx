@@ -219,9 +219,20 @@ export default function TestStripePage() {
                       Payment Intent Creation Failed
                     </h3>
                   </div>
-                  <p className="text-red-700 dark:text-red-300 text-sm">
-                    {error}
-                  </p>
+                  <div className="space-y-2">
+                    <p className="text-red-700 dark:text-red-300 text-sm">
+                      {error}
+                    </p>
+                    <div className="text-xs text-red-600 dark:text-red-400">
+                      <strong>Troubleshooting:</strong>
+                      <ul className="list-disc list-inside mt-1 space-y-1">
+                        <li>Check that all environment variables are set correctly</li>
+                        <li>Verify Stripe secret key is valid for your account</li>
+                        <li>Ensure Supabase connection is working</li>
+                        <li>Check browser console for additional error details</li>
+                      </ul>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}
