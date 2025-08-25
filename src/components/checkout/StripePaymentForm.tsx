@@ -212,10 +212,26 @@ export function StripePaymentForm({
           console.warn("Payment intent created without ID in response");
         }
 
-        console.log("Payment intent created successfully:", {
+        console.log("✅ Payment intent created successfully:", {
           paymentIntentId: data.paymentIntentId,
           amount: data.amount,
+          currency: data.currency,
+          clientSecretPresent: !!data.clientSecret,
+          supportedMethodsCount: data.supportedPaymentMethods?.length || 0
         });
+
+        // Validate critical response data
+        if (!data.clientSecret) {
+          throw new Error("Payment intent created but missing client secret");
+        }
+
+        if (!data.paymentIntentId) {
+          console.warn("⚠️ Payment intent created without ID");
+        }
+
+        if (!data.amount || data.amount <= 0) {
+          throw new Error("Invalid payment amount in response");
+        }
 
         setClientSecret(data.clientSecret);
         setSupportedMethods(data.supportedPaymentMethods || []);
