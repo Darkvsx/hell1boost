@@ -62,28 +62,29 @@ export default function TestStripePage() {
         body: JSON.stringify(testData),
       });
 
-      // Clone the response to read it multiple times if needed
-      const responseClone = response.clone();
+      // Read the response body once as text
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+      console.log('Response status:', response.status, response.statusText);
 
-      let data;
-      let responseText;
-
-      try {
-        responseText = await response.text();
-        console.log('Raw response:', responseText);
-
-        if (!responseText.trim()) {
-          throw new Error('Empty response from server');
-        }
-
-        data = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Parse error:', parseError);
-        throw new Error(`Failed to parse response: ${responseText || 'No response text'}`);
+      // Check if response text is empty
+      if (!responseText.trim()) {
+        throw new Error(`Empty response from server. Status: ${response.status} ${response.statusText}`);
       }
 
-      if (!responseClone.ok) {
-        throw new Error(data.error || data.details || `HTTP ${response.status}: ${response.statusText}`);
+      // Parse the JSON response
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('JSON Parse error:', parseError);
+        throw new Error(`Failed to parse JSON response: ${responseText.substring(0, 200)}...`);
+      }
+
+      // Check if the request was successful AFTER parsing the response
+      if (!response.ok) {
+        const errorMessage = data.error || data.details || data.message || `HTTP ${response.status}: ${response.statusText}`;
+        throw new Error(errorMessage);
       }
 
       setResult(data);
