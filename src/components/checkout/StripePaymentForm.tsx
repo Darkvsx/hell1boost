@@ -295,7 +295,7 @@ export function StripePaymentForm({
     };
 
     initializePayment();
-  }, [total, disabled, cartItems.length]); // Added cartItems.length dependency
+  }, [total, disabled, cartItems.length, metadata.userEmail]); // Stabilized dependencies
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
