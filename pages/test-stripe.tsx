@@ -151,6 +151,56 @@ export default function TestStripePage() {
               </Button>
             </div>
 
+            {/* Environment Check Results */}
+            {envCheck && (
+              <Card className={`border ${envCheck.allPassed ? 'border-green-200 bg-green-50 dark:bg-green-950/20' : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20'}`}>
+                <CardContent className="p-4">
+                  <div className="flex items-center mb-3">
+                    {envCheck.allPassed ? (
+                      <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-yellow-600 mr-2" />
+                    )}
+                    <h3 className={`font-semibold ${envCheck.allPassed ? 'text-green-800 dark:text-green-200' : 'text-yellow-800 dark:text-yellow-200'}`}>
+                      Environment Check {envCheck.allPassed ? 'Passed' : 'Issues Found'}
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <h4 className="font-medium mb-2">Required Variables:</h4>
+                      <ul className="space-y-1">
+                        <li className="flex items-center">
+                          {envCheck.stripePublishableKey ? '✅' : '❌'} Stripe Publishable Key
+                        </li>
+                        <li className="flex items-center">
+                          {envCheck.supabaseUrl ? '✅' : '❌'} Supabase URL
+                        </li>
+                        <li className="flex items-center">
+                          {envCheck.supabaseAnonKey ? '✅' : '❌'} Supabase Anon Key
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">Format Validation:</h4>
+                      <ul className="space-y-1">
+                        <li className="flex items-center">
+                          {envCheck.stripeKeyFormat ? '✅' : '❌'} Stripe Key Format (pk_)
+                        </li>
+                        <li className="flex items-center">
+                          {envCheck.supabaseUrlFormat ? '✅' : '❌'} Supabase URL Format
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Checked at: {new Date(envCheck.timestamp).toLocaleString()}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Success Result */}
             {result && (
               <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
