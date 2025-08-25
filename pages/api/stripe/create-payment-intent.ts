@@ -225,32 +225,8 @@ export default async function handler(
       finalAmount,
     });
 
-    // Configure payment methods - enable all available methods including enhanced payment capabilities
-    const paymentMethodTypes = [
-      "card",
-      "us_bank_account",
-      "link",
-      "apple_pay",
-      "google_pay",
-      "amazon_pay",
-      "venmo",
-      "cashapp",
-      "klarna",
-      "affirm",
-      "afterpay_clearpay",
-      "alipay",
-      "acss_debit",
-      "bacs_debit",
-      "bancontact",
-      "eps",
-      "giropay",
-      "ideal",
-      "p24",
-      "sepa_debit",
-      "sofort",
-    ];
-
-    // Create payment intent with comprehensive payment method support
+    // Create payment intent with automatic payment methods (Stripe's recommended approach)
+    // Note: Cannot use both automatic_payment_methods and payment_method_types together
     const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
       amount: Math.round(finalAmount * 100), // Convert to cents
       currency: currency.toLowerCase(),
@@ -258,7 +234,6 @@ export default async function handler(
         enabled: true,
         allow_redirects: "always",
       },
-      payment_method_types: paymentMethodTypes,
       setup_future_usage: "off_session", // Allow saving payment methods for future use
       receipt_email: metadata.userEmail,
       shipping: {
