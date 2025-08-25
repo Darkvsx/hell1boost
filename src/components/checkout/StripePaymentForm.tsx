@@ -71,8 +71,19 @@ export function StripePaymentForm({
 
   useEffect(() => {
     const initializePayment = async () => {
+      console.log("🔄 Payment initialization triggered", {
+        total,
+        disabled,
+        cartItemsLength: cartItems.length,
+        isInitializing: initializingRef.current
+      });
+
       // Prevent multiple concurrent initializations
       if (initializingRef.current || disabled) {
+        console.log("🛑 Skipping initialization:", {
+          alreadyInitializing: initializingRef.current,
+          disabled
+        });
         setIsLoading(false);
         return;
       }
