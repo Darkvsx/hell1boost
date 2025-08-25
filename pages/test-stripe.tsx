@@ -126,20 +126,30 @@ export default function TestStripePage() {
               </ul>
             </div>
 
-            <Button 
-              onClick={testPaymentIntentCreation}
-              disabled={isLoading}
-              className="w-full h-12 text-lg"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Testing Payment Intent Creation...
-                </>
-              ) : (
-                'Test Payment Intent Creation'
-              )}
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button
+                onClick={checkEnvironment}
+                variant="outline"
+                className="h-12 text-base"
+              >
+                Check Environment Setup
+              </Button>
+
+              <Button
+                onClick={testPaymentIntentCreation}
+                disabled={isLoading}
+                className="h-12 text-base"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Testing Payment Intent...
+                  </>
+                ) : (
+                  'Test Payment Intent Creation'
+                )}
+              </Button>
+            </div>
 
             {/* Success Result */}
             {result && (
