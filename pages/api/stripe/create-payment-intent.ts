@@ -111,7 +111,7 @@ export default async function handler(
       const serviceIds = services.map((s) => s.id);
       const { data: dbServices, error: servicesError } = await supabase
         .from("services")
-        .select("id, price, active")
+        .select("id, price, active, title")
         .in("id", serviceIds)
         .eq("active", true);
 
