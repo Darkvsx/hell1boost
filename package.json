@@ -8,12 +8,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:vercel": "npm run lint:fix && next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
-    "typecheck": "tsc --noEmit",
-    "analyze": "ANALYZE=true next build"
+    "typecheck": "tsc --noEmit --incremental false",
+    "typecheck:fast": "tsc --noEmit --skipLibCheck --incremental false",
+    "analyze": "ANALYZE=true next build",
+    "clean": "rm -rf .next tsconfig.tsbuildinfo node_modules/.cache"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^3.9.1",
