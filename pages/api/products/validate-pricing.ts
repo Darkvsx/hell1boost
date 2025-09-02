@@ -11,9 +11,9 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const validatePricingSchema = z.object({
   items: z.array(
     z.object({
-      product_id: z.string().uuid(),
+      product_id: z.string().min(1),
       quantity: z.number().positive().int(),
-      product_type: z.enum(["service", "bundle", "custom_item"]),
+      product_type: z.enum(["service", "bundle", "custom_item"]).optional(),
     }),
   ),
 });
