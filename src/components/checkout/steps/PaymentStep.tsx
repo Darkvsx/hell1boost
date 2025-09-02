@@ -71,8 +71,7 @@ export function PaymentStep({
     return (
       cleanedCartItems.length > 0 &&
       stepData.agreeToTerms &&
-      stepData.discordUsername.trim() &&
-      total >= 0.5
+      stepData.discordUsername.trim()
     );
   };
 
