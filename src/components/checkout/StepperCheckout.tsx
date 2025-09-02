@@ -136,7 +136,7 @@ export function StepperCheckout({
           cartItems.length > 0 &&
           stepData.agreeToTerms &&
           stepData.discordUsername.trim() !== "" &&
-          total >= 0.5
+          (total >= 0.5 || (stepData.creditsUsed || 0) > 0)
         );
       default:
         return false;
