@@ -7,9 +7,8 @@ const API_CACHE_NAME = "helldivers-boost-api-v1";
 const STATIC_ASSETS = [
   "/",
   "/bundles",
-  "/checkout",
+  "/unified-checkout",
   "/account",
-  "/_next/static/css/app.css",
   "/manifest.json",
 ];
 
@@ -20,15 +19,25 @@ const API_ENDPOINTS = ["/api/ping", "/api/demo"];
 self.addEventListener("install", (event) => {
   console.log("[SW] Installing Service Worker");
 
-  event.waitUntil(
-    Promise.all([
-      caches.open(STATIC_CACHE_NAME).then((cache) => {
-        console.log("[SW] Caching static assets");
-        return cache.addAll(STATIC_ASSETS);
+  event.waitUntil((async () => {
+    console.log("[SW] Pre-caching static assets safely");
+    const staticCache = await caches.open(STATIC_CACHE_NAME);
+    await caches.open(API_CACHE_NAME);
+    await Promise.all(
+      STATIC_ASSETS.map(async (url) => {
+        try {
+          const resp = await fetch(url, { cache: "no-store" });
+          if (resp.ok) {
+            await staticCache.put(url, resp.clone());
+          } else {
+            console.warn("[SW] Skipping asset (non-OK):", url, resp.status);
+          }
+        } catch (e) {
+          console.warn("[SW] Skipping asset (fetch failed):", url, e);
+        }
       }),
-      caches.open(API_CACHE_NAME),
-    ]),
-  );
+    );
+  })());
 
   // Skip waiting to activate immediately
   self.skipWaiting();
