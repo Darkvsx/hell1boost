@@ -98,15 +98,13 @@ export function OrderDetailsStep({
     setPromoCodeStatus("loading");
 
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
-
-      const { data, error } = await supabase.rpc("validate_referral_code", {
-        code: code.trim(),
-        user_id: user?.id || null,
+      const resp = await fetch("/api/referrals/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ referralCode: code.trim(), userId: user?.id || null }),
       });
 
-      if (error) {
-        console.error("Error validating promo code:", error);
+      if (!resp.ok) {
         setPromoCodeStatus("error");
         toast({
           title: "Error",
@@ -116,7 +114,7 @@ export function OrderDetailsStep({
         return;
       }
 
-      const validation = data as unknown as ValidationResponse;
+      const validation = (await resp.json()) as unknown as ValidationResponse;
 
       if (!validation || !validation.valid) {
         setPromoCodeStatus("error");
